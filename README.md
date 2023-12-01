@@ -1,160 +1,109 @@
 # LooksMapping Scraper
 
-A comprehensive web scraping toolkit for extracting restaurant data from LooksMapping.com, focusing on Manhattan restaurants with attractiveness, age, and gender demographic scores.
+A comprehensive web scraping toolkit for extracting restaurant data from LooksMapping.com, focusing on Manhattan restaurants with demographic and attractiveness metrics.
 
-## Overview
+[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-This project provides multiple scraping approaches to extract restaurant data from LooksMapping.com, a website that maps restaurants in New York City with demographic and attractiveness metrics. The scrapers collect data including restaurant names, neighborhoods, attractiveness scores, age demographics, and gender ratios.
+## 🚀 Features
 
-## Features
-
-- **Multiple Scraping Methods**: Basic HTTP requests, Selenium WebDriver, and Playwright automation
+- **Multiple Scraping Methods**: HTTP requests, Selenium WebDriver, and Playwright automation
 - **Comprehensive Data Extraction**: Restaurant names, neighborhoods, attractiveness scores, age demographics, gender ratios
 - **Neighborhood Analysis**: Statistical analysis of Manhattan neighborhoods by various metrics
 - **Robust Error Handling**: Multiple fallback strategies for data extraction
-- **Data Export**: JSON output with structured restaurant data
+- **CLI Interface**: Easy-to-use command-line tools for scraping and analysis
+- **Type Safety**: Full type hints with mypy strict mode
+- **Testing**: Comprehensive test coverage with pytest
 
-## Project Structure
+## 📋 Requirements
 
-```
-├── README.md                          # This file
-├── requirements.txt                   # Python dependencies
-├── basic_scraper.py                   # Simple HTTP-based scraper
-├── comprehensive_map_scraper.py        # Advanced Playwright-based scraper
-├── selenium_scraper.py                # Selenium WebDriver scraper
-├── selenium_scraper_robust.py         # Enhanced Selenium scraper
-├── simple_scraper.py                  # Minimal scraper implementation
-├── playwright_scraper.py              # Playwright automation scraper
-├── requests_html_scraper.py           # Requests-HTML based scraper
-├── neighborhood_analyzer.py           # Data analysis and statistics
-├── extract_data.py                    # Data extraction utilities
-├── map_scraper.py                     # Map-specific scraping logic
-├── pin_scraper.py                     # Pin-based data extraction
-├── scraper.py                         # Main scraper interface
-└── restaurant_data.json               # Output data file
-```
-
-## Installation
-
-### Prerequisites
-
-- Python 3.7 or higher
-- Chrome browser (for Selenium-based scrapers)
+- Python 3.8 or higher
+- Chrome browser (for Selenium and Playwright scrapers)
 - Internet connection
 
-### Setup
+## 🛠️ Installation
 
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/Zu67/looks-mapping-project.git
-   cd looks-mapping-project
-   ```
+### 1. Clone the Repository
 
-2. **Create a virtual environment**:
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
+```bash
+git clone https://github.com/yourusername/looksmapping-scraper.git
+cd looksmapping-scraper
+```
 
-3. **Install dependencies**:
-   ```bash
-   pip install -r requirements.txt
-   ```
+### 2. Create Virtual Environment
 
-4. **Install browser drivers** (for Selenium):
-   ```bash
-   # Chrome driver will be automatically managed
-   ```
+```bash
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+```
 
-5. **Install Playwright browsers** (for Playwright scrapers):
-   ```bash
-   playwright install
-   ```
+### 3. Install Dependencies
 
-## Usage
+```bash
+# Install production dependencies
+pip install -e .
+
+# Install development dependencies
+pip install -e ".[dev]"
+```
+
+### 4. Install Browser Dependencies
+
+```bash
+# Install Playwright browsers
+playwright install
+
+# Chrome driver is automatically managed by webdriver-manager
+```
+
+## 🚀 Quick Start
 
 ### Basic Scraping
 
-The simplest way to start scraping:
-
 ```bash
-python basic_scraper.py
-```
+# Scrape using HTTP requests (fastest)
+python scripts/scrape.py --method http
 
-This will:
-- Fetch the LooksMapping website
-- Extract restaurant data from JavaScript objects
-- Save results to `restaurant_data.json`
+# Scrape using Selenium (handles dynamic content)
+python scripts/scrape.py --method selenium --headless
 
-### Advanced Scraping with Playwright
-
-For comprehensive data extraction with browser automation:
-
-```bash
-python comprehensive_map_scraper.py
-```
-
-This will:
-- Launch a browser and navigate to the website
-- Interact with the map interface
-- Extract data from multiple viewing modes (hot, age, gender)
-- Collect comprehensive restaurant data
-
-### Selenium-based Scraping
-
-For traditional browser automation:
-
-```bash
-python selenium_scraper.py
+# Scrape using Playwright (most comprehensive)
+python scripts/scrape.py --method playwright
 ```
 
 ### Data Analysis
 
-After scraping, analyze the collected data:
-
 ```bash
-python neighborhood_analyzer.py
+# Analyze scraped data
+python scripts/analyze.py --input restaurant_data.json
+
+# Get top neighborhoods by attractiveness
+python scripts/analyze.py --input data.json --top 5 --metric avg_attractive
+
+# Show correlation analysis
+python scripts/analyze.py --input data.json --correlation --summary
 ```
 
-This will provide statistical analysis of Manhattan neighborhoods.
+## 📊 Data Structure
 
-## Scraping Methods
-
-### 1. Basic HTTP Scraper (`basic_scraper.py`)
-- **Method**: HTTP requests with BeautifulSoup parsing
-- **Pros**: Fast, lightweight, no browser required
-- **Cons**: Limited to static content, may miss dynamic data
-- **Use Case**: Quick data extraction when JavaScript execution isn't needed
-
-### 2. Playwright Scraper (`comprehensive_map_scraper.py`)
-- **Method**: Full browser automation with Playwright
-- **Pros**: Handles dynamic content, can interact with complex interfaces
-- **Cons**: Slower, requires browser installation
-- **Use Case**: Comprehensive data extraction with map interaction
-
-### 3. Selenium Scraper (`selenium_scraper.py`)
-- **Method**: WebDriver automation with Selenium
-- **Pros**: Mature ecosystem, good debugging tools
-- **Cons**: Requires driver management, slower than Playwright
-- **Use Case**: When you need Selenium-specific features
-
-## Data Structure
-
-The scraped data is saved in `restaurant_data.json` with the following structure:
+The scraped data is saved in JSON format with the following structure:
 
 ```json
 [
   {
     "name": "Restaurant Name",
     "hood": "Neighborhood",
-    "attractive_score": "8.5",
-    "age_score": "7.2",
-    "gender_score": "6.8",
+    "attractive_score": 8.5,
+    "age_score": 7.2,
+    "gender_score": 6.8,
     "cuisine": "Italian",
-    "score": "8.5",
+    "score": "8.5/10",
     "reviewers": "150 reviewers",
     "lat": 40.7589,
-    "long": -73.9851
+    "long": -73.9851,
+    "source": "looksmapping.com",
+    "scraped_at": "2023-11-30T10:00:00Z"
   }
 ]
 ```
@@ -170,93 +119,219 @@ The scraped data is saved in `restaurant_data.json` with the following structure
 - **score**: Overall rating
 - **reviewers**: Number of reviewers
 - **lat/long**: Geographic coordinates
+- **source**: Data source
+- **scraped_at**: Timestamp of scraping
 
-## Configuration
+## 🔧 Configuration
 
-### Browser Settings
+### Environment Variables
 
-For headless operation, modify the browser launch options:
+Create a `.env` file in the project root:
 
-```python
-# In comprehensive_map_scraper.py
-browser = await p.chromium.launch(headless=True)  # Set to True for headless
-
-# In selenium_scraper.py
-chrome_options.add_argument("--headless")  # Uncomment for headless
+```bash
+# Copy the example file
+cp .env.example .env
 ```
 
-### Timeout Settings
+Key configuration options:
 
-Adjust wait times based on your internet connection:
+```env
+# Scraping Configuration
+SCRAPER_TIMEOUT=30
+SCRAPER_HEADLESS=true
+SCRAPER_MAX_RETRIES=3
+SCRAPER_DELAY=1.0
 
-```python
-# Increase timeouts for slower connections
-await page.wait_for_timeout(5000)  # 5 seconds
-time.sleep(3)  # 3 seconds
+# Browser Configuration
+BROWSER_WIDTH=1280
+BROWSER_HEIGHT=800
+
+# Data Configuration
+DATA_OUTPUT_DIR=./data
+DATA_FORMAT=json
 ```
 
-## Troubleshooting
+### Command Line Options
+
+```bash
+# Scraping options
+python scripts/scrape.py --method http --output data.json --format json
+
+# Analysis options
+python scripts/analyze.py --input data.json --output analysis.json --top 10
+```
+
+## 🧪 Testing
+
+### Run Tests
+
+```bash
+# Run all tests
+make test
+
+# Run tests with coverage
+pytest --cov=src --cov-report=html
+
+# Run specific test file
+pytest tests/test_scrapers/test_http_scraper.py -v
+```
+
+### Code Quality
+
+```bash
+# Format code
+make format
+
+# Run linting
+make lint
+
+# Type checking
+make type-check
+
+# Run all quality checks
+make pre-commit
+```
+
+## 📈 Analysis Features
+
+### Neighborhood Rankings
+
+The analyzer provides comprehensive neighborhood analysis:
+
+- **Attractiveness Rankings**: Neighborhoods ranked by average attractiveness
+- **Age Demographics**: Areas with younger vs. older demographics
+- **Gender Ratios**: Neighborhoods with different gender distributions
+- **Statistical Analysis**: Mean, median, standard deviation calculations
+- **Correlation Analysis**: Relationships between different metrics
+
+### Example Analysis Output
+
+```
+=== TOP 10 NEIGHBORHOODS BY ATTRACTIVENESS ===
+neighborhood        avg_attractive  restaurant_count
+SoHo                9.2            15
+Upper East Side     8.9            12
+West Village        8.7            18
+Tribeca             8.5            8
+Chelsea             8.3            10
+```
+
+## 🏗️ Architecture
+
+### Project Structure
+
+```
+LooksMappingScraper/
+├── src/
+│   ├── scrapers/          # Scraping implementations
+│   ├── analyzers/         # Data analysis tools
+│   ├── models/           # Data models
+│   └── utils/            # Utility functions
+├── tests/                # Test suite
+├── scripts/              # CLI scripts
+├── docs/                 # Documentation
+└── data/                 # Output data
+```
+
+### Scraping Methods
+
+1. **HTTP Scraper** (`HttpScraper`)
+   - Fast and lightweight
+   - Uses requests and BeautifulSoup
+   - Limited to static content
+
+2. **Selenium Scraper** (`SeleniumScraper`)
+   - Handles dynamic content
+   - Uses Chrome WebDriver
+   - Good for JavaScript-heavy sites
+
+3. **Playwright Scraper** (`PlaywrightScraper`)
+   - Most comprehensive
+   - Advanced browser automation
+   - Map interaction and popup handling
+
+## 🚨 Troubleshooting
 
 ### Common Issues
 
 1. **"ChromeDriver not found"**
-   - Solution: The project uses webdriver-manager to auto-download drivers
+   ```bash
+   # The project uses webdriver-manager to auto-download drivers
+   pip install webdriver-manager
+   ```
 
 2. **"Playwright browsers not installed"**
-   - Solution: Run `playwright install`
+   ```bash
+   playwright install
+   ```
 
 3. **"No restaurants found"**
-   - Solution: Check if the website structure has changed
+   - Check if the website structure has changed
    - Try different scraping methods
    - Verify internet connection
 
 4. **"Timeout errors"**
-   - Solution: Increase timeout values in the code
+   - Increase timeout values in configuration
    - Check if the website is accessible
 
 ### Debug Mode
 
 Enable debug mode for detailed logging:
 
-```python
+```bash
 # Set headless=False to see browser actions
-browser = await p.chromium.launch(headless=False)
+python scripts/scrape.py --method selenium --verbose
 ```
 
-## Data Analysis
-
-The `neighborhood_analyzer.py` script provides statistical analysis:
-
-- **Attractiveness Rankings**: Neighborhoods ranked by average attractiveness
-- **Age Demographics**: Areas with younger vs. older demographics  
-- **Gender Ratios**: Neighborhoods with different gender distributions
-
-## Contributing
+## 🤝 Contributing
 
 1. Fork the repository
-2. Create a feature branch
+2. Create a feature branch: `git checkout -b feature-name`
 3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
+4. Add tests for new functionality
+5. Run quality checks: `make pre-commit`
+6. Commit your changes: `git commit -m "feat: add new feature"`
+7. Push to the branch: `git push origin feature-name`
+8. Submit a pull request
 
-## Legal Notice
+### Development Setup
+
+```bash
+# Complete development setup
+make dev-setup
+
+# Run CI pipeline locally
+make ci
+```
+
+## 📝 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## ⚖️ Legal Notice
 
 This project is for educational and research purposes. Please respect the website's terms of service and robots.txt file. Use reasonable delays between requests to avoid overloading the server.
 
-## License
-
-This project is open source. Please use responsibly and in accordance with the target website's terms of service.
-
-## Support
+## 🆘 Support
 
 For issues and questions:
-1. Check the troubleshooting section
-2. Review the code comments
-3. Open an issue on GitHub
 
-## Changelog
+1. Check the [troubleshooting section](#-troubleshooting)
+2. Review the [documentation](docs/)
+3. Open an [issue](https://github.com/yourusername/looksmapping-scraper/issues)
 
-- **v1.0**: Initial release with basic scraping functionality
-- **v1.1**: Added Playwright-based comprehensive scraper
-- **v1.2**: Enhanced error handling and data analysis
-- **v1.3**: Added neighborhood analysis and statistical reporting
+## 📊 Changelog
+
+- **v0.1.0** (2023-12-03): Initial release
+  - HTTP, Selenium, and Playwright scrapers
+  - Neighborhood analysis tools
+  - CLI interface
+  - Comprehensive testing suite
+  - Full documentation
+
+## 🙏 Acknowledgments
+
+- [LooksMapping.com](https://looksmapping.com) for providing the data source
+- [Playwright](https://playwright.dev/) for advanced browser automation
+- [Selenium](https://selenium.dev/) for WebDriver automation
+- [BeautifulSoup](https://www.crummy.com/software/BeautifulSoup/) for HTML parsing
