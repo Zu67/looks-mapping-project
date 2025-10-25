@@ -1,0 +1,16 @@
+[
+  {
+    "name": "Test Restaurant 1",
+    "hood": "SoHo",
+    "attractive_score": "8.5",
+    "gender_score": "6.2",
+    "age_score": "7.8"
+  },
+  {
+    "name": "Test Restaurant 2",
+    "hood": "Upper East Side",
+    "attractive_score": "9.1",
+    "gender_score": "5.5",
+    "age_score": "8.3"
+  }
+]

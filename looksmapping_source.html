@@ -1,0 +1,1488 @@
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>LooksMapping</title><script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script><link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet"><script defer="defer" src="https://umani.api.route.run/script.js" data-website-id="ab8d70d5-e793-4f24-aea9-2b8514b9d756"></script><style>body {
+  margin: 0;
+  padding: 0px;
+  background-color: #fff;
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
+  box-sizing: border-box;
+}
+#sidebar {
+  width: 40%;
+  padding: 20px;
+  max-width: 350px;
+  border-radius: 4px;
+  overflow-y: scroll;
+  scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none;  /* IE and Edge */
+  &::-webkit-scrollbar {
+    display: none; /* Chrome, Safari and Opera */
+  }
+}
+.mapboxgl-ctrl-logo {
+  display:none!important;
+}
+
+
+  .pix {
+      /* Simulate CRT pixelation and low resolution */
+      text-rendering: optimizeSpeed;
+      font-family: Arial, sans-serif;
+      font-smooth: never;
+      -webkit-font-smoothing: none;
+      -moz-osx-font-smoothing: grayscale;
+      
+      
+      
+      /* Simulate slight pixelation */
+      filter: blur(0.3px);
+      
+      color: black;
+      font-size: 16px;
+      
+  }
+#map-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+#map {
+  flex: 1;
+  background-color: #fff;
+  position: relative;
+  /* Old-school rendering */
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+}
+/* Force pixelated rendering for all canvas elements within map */
+#map canvas {
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+}
+/* Old-school text styling */
+#map .mapboxgl-canvas-container {
+  font-smooth: never;
+  -webkit-font-smoothing: none;
+}
+.map-attribution-left {
+  position: absolute;
+  bottom: 0px;  /* Height of city-bar */
+  left: 5px;
+  font-family: "MS Sans Serif", Arial, sans-serif;
+  font-size: 12px;
+  color: black;
+  z-index: 1;
+  font-smooth: never;
+  -webkit-font-smoothing: none;
+  font-weight: bold;
+}
+.map-attribution-right {
+  position: absolute;
+  font-weight: bold;
+  bottom: 0px;  /* Height of city-bar */
+  right: 5px;
+  font-family: "MS Sans Serif", Arial, sans-serif;
+  font-size: 12px;
+  color: black;
+  z-index: 1;
+  font-smooth: never;
+  -webkit-font-smoothing: none;
+}
+/* Scanline effect for retro feel */
+#retro-overlay {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  top: 0;
+  height: 100%;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.03),
+    rgba(0, 0, 0, 0.03) 1px,
+    transparent 1px,
+    transparent 2px
+  );
+  pointer-events: none;
+  z-index: 10;
+}
+#logo {
+  width: 345px;
+}
+
+#blurb {
+  background-color: #FFEAC0;
+  border-top: 3px solid #F2BA21;
+  font-size: 20px;
+  padding: 10px;
+  font-weight: bold;
+}
+
+#desc {
+  font-size: 16px;
+}
+
+#search-container {
+  width: 100%;
+  padding: 20px 0px;
+}
+
+#city-bar {
+  position: relative;  /* Changed from absolute */
+  width: 100%;
+  box-sizing: border-box;
+  background-color: #fff;
+  padding: 8px;
+  text-align: center;
+  z-index: 1;
+  border-bottom: 1px solid #ccc;
+}
+.city-link {
+  color: #0000EE;
+  text-decoration: underline;
+  cursor: pointer;
+  margin-right: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.city-icon {
+  width: 12px;
+  height: 12px;
+  margin-right: 1px;
+  vertical-align: middle;
+  filter: brightness(0) saturate(100%) invert(14%) sepia(96%) saturate(7495%) hue-rotate(245deg) brightness(97%) contrast(115%);
+}
+.city-active {
+  font-weight: bold;
+  opacity: 1;
+}
+.city-inactive {
+  opacity: 0.4;
+}
+/* Add these CSS classes before the closing style tag */
+.popup-container {
+  padding: 10px;
+  min-width: 200px;
+  padding-bottom: 0!important;
+}
+.popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 15px;
+}
+.popup-info {
+  color: #000;
+}
+.popup-score {
+  font-weight: bold;
+}
+.popup-metrics {
+  margin-top: 12px;
+}
+.metric-container {
+  margin-bottom: 8px;
+}
+.metric-bar {
+  width: 100%;
+  height: 4px;
+  background: #eee;
+  border-radius: 2px;
+  position: relative;
+}
+/* Base metric indicator styles */
+.metric-indicator {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  top: -2px;
+  transform: translateX(-50%);
+}
+
+/* Attractive metric styles */
+.metric-container:nth-child(1) .metric-indicator,
+.metric-container:nth-child(1) .metric-labels {
+  color: #FF4136;
+}
+.metric-container:nth-child(1) .metric-indicator {
+  background: #FF4136;
+}
+
+/* Age metric styles */
+.metric-container:nth-child(2) .metric-indicator,
+.metric-container:nth-child(2) .metric-labels {
+  color: #2ECC40;
+}
+.metric-container:nth-child(2) .metric-indicator {
+  background: #2ECC40;
+}
+
+/* Gender metric styles */
+.metric-container:nth-child(3) .metric-indicator,
+.metric-container:nth-child(3) .metric-labels {
+  color: #FFB700;
+}
+.metric-container:nth-child(3) .metric-indicator {
+  background: #FFB700;
+}
+
+.metric-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+}
+#search-results {
+  margin-top: 10px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+#results-table {
+  width: 100%;
+}
+#results-table > div {
+  cursor: pointer;
+  padding: 3px;
+  display: flex;
+  align-items: center;
+}
+#results-table > div:hover {
+  background-color: #f5f5f5;
+}
+.result-pin {
+  width: 22px;
+  height: 36px;
+}
+.result-info {
+  margin-left: 8px;
+  line-height: 1.1;
+}
+.result-name {
+  color: #0000EE;
+  text-decoration: underline;
+  display: block;
+  max-width: 231px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.result-score {
+  display: block;
+  font-size: 16px;
+}
+
+/* Add responsive styles */
+@media (max-width: 768px) {
+  body {
+    flex-direction: column;
+  }
+  
+  #sidebar {
+    width: 100%;
+    max-width: 100%;
+    margin-right: 0;
+    padding: 10px;
+    height: 42vh;
+    overflow-y: auto;
+    box-sizing: border-box;
+  }
+  
+  #map-area {
+    height: 58vh;
+    min-height: 58vh;
+    flex: none;
+  }
+  
+  #map {
+    height: calc(58vh);
+  }
+
+  #city-bar {
+    border-top: 1px solid #ccc;
+    border-bottom: none;
+    background: lightgray
+    
+  }
+  
+  #logo {
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+    display: block;
+  }
+  
+  #search-box {
+    width: calc(100% - 80px) !important;
+  }
+  
+  .city-link {
+    margin-right: 10px;
+  }
+  
+  #city-bar {
+    padding: 4px;
+  }
+  
+  .city-link span {
+    font-size: 14px;
+  }
+  
+  .popup-container {
+    min-width: 150px;
+  }
+  
+  #available {
+      display:none;
+  }
+  
+  .pix {
+    filter: none;  /* Remove blur effect on mobile */
+  }
+}
+
+/* Add modal styles */
+.mobile-modal {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  z-index: 1000;
+  width: 80%;
+  max-width: 320px;
+}
+
+.modal-backdrop {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 999;
+}
+
+#map-modes {
+  position: absolute;
+  top: 50px;
+  left: 10px;
+  z-index: 2;
+  background: white;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.mode-selector {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 6px;
+}
+
+.mode-button {
+  padding: 4px 8px;
+  border: 1px solid #ccc;
+  background: white;
+  cursor: pointer;
+  font-family: "MS Sans Serif", Arial, sans-serif;
+  font-size: 12px;
+  -webkit-font-smoothing: none;
+}
+
+.mode-button.active {
+  background: #e0e0e0;
+  font-weight: bold;
+}
+
+.mode-legend {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+}
+
+.legend-gradient {
+  width: 100px;
+  height: 10px;
+  border: 1px solid #ccc;
+}
+
+.legend-left, .legend-right {
+  font-family: "MS Sans Serif", Arial, sans-serif;
+  -webkit-font-smoothing: none;
+}
+
+#map-controls {
+  position: absolute;
+  right: 10px;
+  top: 58px;
+  z-index: 10;
+  pointer-events: all;
+}
+
+.pan-control {
+  position: relative;
+  width: 59px;
+  height: 64px;
+}
+
+.pan-shadow {
+  position: absolute;
+  width: 59px;
+  height: 64px;
+  left: 0;
+  top: 0;
+  z-index: 0;
+}
+
+.pan-north {
+  position: absolute;
+  width: 17px;
+  height: 17px;
+  left: 20px;
+  top: 0;
+  z-index: 1;
+  cursor: pointer;
+}
+
+.pan-east {
+  position: absolute;
+  width: 17px;
+  height: 17px;
+  left: 40px;
+  top: 20px;
+  z-index: 1;
+  cursor: pointer;
+}
+
+.pan-south {
+  position: absolute;
+  width: 17px;
+  height: 17px;
+  left: 20px;
+  top: 40px;
+  z-index: 1;
+  cursor: pointer;
+}
+
+.pan-west {
+  position: absolute;
+  width: 17px;
+  height: 17px;
+  left: 0;
+  top: 20px;
+  z-index: 1;
+  cursor: pointer;
+}
+
+.pan-center {
+  position: absolute;
+  width: 17px;
+  height: 17px;
+  left: 20px;
+  top: 20px;
+  z-index: 1;
+  cursor: pointer;
+}
+
+.zoom-control {
+  position: relative;
+  margin-top: 6px;
+}
+
+.zoom-plus {
+  position: absolute;
+  width: 17px;
+  height: 17px;
+  left: 20px;
+  top: 0;
+  z-index: 1;
+  cursor: pointer;
+}
+
+.zoom-minus {
+  position: absolute;
+  width: 17px;
+  height: 17px;
+  left: 20px;
+  top: 190px;
+  z-index: 1;
+  cursor: pointer;
+}
+
+.slider-shadow {
+  position: absolute;
+  width: 19px;
+  height: 215px;
+  left: 20px;
+  top: -6px;
+  z-index: 0;
+}
+
+.slider-container {
+  position: absolute;
+  left: 21px;
+  top: 20px;
+  width: 15px;
+  height: 167px;
+}
+
+.slider-bar {
+  position: absolute;
+  width: 15px;
+  height: 167px;
+  left: 0;
+  top: 0;
+  z-index: 1;
+  cursor: pointer;
+}
+
+.slider-handle {
+  position: absolute;
+  width: 22px;
+  height: 14px;
+  left: -2px;
+  top: 144px;
+  z-index: 2;
+  cursor: grab;
+}
+
+/* Hide controls on mobile */
+@media (max-width: 768px) {
+  #map-controls {
+    display: none;
+  }
+}
+
+/* Add this to prevent image dragging */
+#map-controls img {
+  -webkit-user-drag: none;
+  -khtml-user-drag: none;
+  -moz-user-drag: none;
+  -o-user-drag: none;
+  user-drag: none;
+}
+</style></head><body><div id="sidebar"><img id="logo" src="/logo.png"><div class="pix" id="blurb">See Which Restaurants Have The Most Attractive Diners – <i style="font-weight: normal">According to AI!</i></div><div class="pix" id="search-container"><input id="search-box" type="text" placeholder="Enter a restaurant..." style="font-family: &quot;MS Sans Serif&quot;, Arial, sans-serif; font-size: 15px; padding: 2px 4px; border: 1px solid rgb(123, 123, 123); background: white; box-shadow: rgba(0, 0, 0, 0.2) 1px 1px 2px inset; width: 250px; height: 31px; -webkit-font-smoothing: none;"><button id="search-button" style="font-family: &quot;MS Sans Serif&quot;, Arial, sans-serif; font-size: 15px; padding: 1px 6px; background: linear-gradient(to bottom, #FFFFFF 0%, #E1E1E1 100%); border: 1px solid #7B7B7B; height: 31px; margin-left: 4px; cursor: pointer; -webkit-font-smoothing: none;">Search</button><div id="search-results" style="margin-top: 10px; max-height: 300px; overflow-y: auto;"><table id="results-table" style="width: 100%; border-collapse: collapse;"></table></div></div><!-- Sidebar content goes here--><div class="pix" id="desc"> I scraped millions of Google Maps restaurant reviews, and gave each reviewer's profile picture to an AI model that rates how hot they are out of 10. This map shows how attractive each restaurant's clientele is. Red means hot, blue means not.<br><br>The model is certainly biased. It's certainly flawed. But we judge places by the people who go there. We always have. And <i>are we not also flawed?</i> This website just puts reductive numbers on the superficial calculations we make every day. A mirror held up to our collective vanity.<div class="pix" style="text-align: center; margin-top: 20px;"><img src="/manb.png" style="max-width: 100px;"></div></div><div class="pix" id="rankings" style="margin-top: 20px;"><div id="rankings-content">
+    <div style="margin-bottom: 20px;">
+      <h4 style="margin-bottom: 8px;">Top 5 hot</h4>
+      <div class="results-group">
+        
+          <div style="cursor: pointer; padding: 3px; display: flex; align-items: center;" onclick="flyToLocation(-73.9688899, 40.7548153, {&quot;age_score&quot;:&quot;4.6&quot;,&quot;attractive_score&quot;:&quot;10.0&quot;,&quot;category&quot;:&quot;Georgian restaurant&quot;,&quot;gender_score&quot;:&quot;6.3&quot;,&quot;lat&quot;:40.7548153,&quot;long&quot;:-73.9688899,&quot;faces&quot;:52,&quot;name&quot;:&quot;Ubani Midtown&quot;,&quot;hood&quot;:&quot;Midtown East&quot;})">
+            <img src="data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2220%22%20height%3D%2234.89%22%20viewBox%3D%220%200%2020%2034.89%22%3E%3Cpath%20d%3D%22m%20817.11249%2C282.97118%20c%20-1.25816%2C1.34277%20-2.04623%2C3.29881%20-2.01563%2C5.13867%200.0639%2C3.84476%201.79693%2C5.3002%204.56836%2C10.59179%200.99832%2C2.32851%202.04027%2C4.79237%203.03125%2C8.87305%200.13772%2C0.60193%200.27203%2C1.16104%200.33416%2C1.20948%200.0621%2C0.0485%200.19644%2C-0.51262%200.33416%2C-1.11455%200.99098%2C-4.08068%202.03293%2C-6.54258%203.03125%2C-8.87109%202.77143%2C-5.29159%204.50444%2C-6.74704%204.56836%2C-10.5918%200.0306%2C-1.83986%20-0.75942%2C-3.79785%20-2.01758%2C-5.14062%20-1.43724%2C-1.53389%20-3.60504%2C-2.66908%20-5.91619%2C-2.71655%20-2.31115%2C-0.0475%20-4.4809%2C1.08773%20-5.91814%2C2.62162%20z%22%20style%3D%22fill%3Argb(255%2C%200%2C%200)%3Bstroke%3A%23000000%3Bstroke-width%3A1%3Bstroke-miterlimit%3A4%3Bstroke-opacity%3A1%22%20transform%3D%22translate(-814.59595%2C-274.38623)%22%2F%3E%3Ccircle%20r%3D%223.0355%22%20cy%3D%2213.86655%22%20cx%3D%228.43469%22%20style%3D%22fill%3A%23000000%22%2F%3E%3C%2Fsvg%3E" class="result-pin">
+            <div class="result-info" style="flex: 1;">
+              <span class="result-name">Ubani Midtown</span>
+              <span class="result-hood" style="display: block; font-size: 12px; color: #666;">Midtown East</span>
+            </div>
+            <div class="result-score" style="margin-left: 8px;">
+              10.0/10
+            </div>
+          </div>
+        
+          <div style="cursor: pointer; padding: 3px; display: flex; align-items: center;" onclick="flyToLocation(-73.9915781, 40.7669821, {&quot;age_score&quot;:&quot;9.9&quot;,&quot;attractive_score&quot;:&quot;10.0&quot;,&quot;category&quot;:&quot;Sushi restaurant&quot;,&quot;gender_score&quot;:&quot;4.3&quot;,&quot;lat&quot;:40.7669821,&quot;long&quot;:-73.9915781,&quot;faces&quot;:50,&quot;name&quot;:&quot;Shinn WEST&quot;,&quot;hood&quot;:&quot;Hell's Kitchen&quot;})">
+            <img src="data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2220%22%20height%3D%2234.89%22%20viewBox%3D%220%200%2020%2034.89%22%3E%3Cpath%20d%3D%22m%20817.11249%2C282.97118%20c%20-1.25816%2C1.34277%20-2.04623%2C3.29881%20-2.01563%2C5.13867%200.0639%2C3.84476%201.79693%2C5.3002%204.56836%2C10.59179%200.99832%2C2.32851%202.04027%2C4.79237%203.03125%2C8.87305%200.13772%2C0.60193%200.27203%2C1.16104%200.33416%2C1.20948%200.0621%2C0.0485%200.19644%2C-0.51262%200.33416%2C-1.11455%200.99098%2C-4.08068%202.03293%2C-6.54258%203.03125%2C-8.87109%202.77143%2C-5.29159%204.50444%2C-6.74704%204.56836%2C-10.5918%200.0306%2C-1.83986%20-0.75942%2C-3.79785%20-2.01758%2C-5.14062%20-1.43724%2C-1.53389%20-3.60504%2C-2.66908%20-5.91619%2C-2.71655%20-2.31115%2C-0.0475%20-4.4809%2C1.08773%20-5.91814%2C2.62162%20z%22%20style%3D%22fill%3Argb(255%2C%200%2C%200)%3Bstroke%3A%23000000%3Bstroke-width%3A1%3Bstroke-miterlimit%3A4%3Bstroke-opacity%3A1%22%20transform%3D%22translate(-814.59595%2C-274.38623)%22%2F%3E%3Ccircle%20r%3D%223.0355%22%20cy%3D%2213.86655%22%20cx%3D%228.43469%22%20style%3D%22fill%3A%23000000%22%2F%3E%3C%2Fsvg%3E" class="result-pin">
+            <div class="result-info" style="flex: 1;">
+              <span class="result-name">Shinn WEST</span>
+              <span class="result-hood" style="display: block; font-size: 12px; color: #666;">Hell's Kitchen</span>
+            </div>
+            <div class="result-score" style="margin-left: 8px;">
+              10.0/10
+            </div>
+          </div>
+        
+          <div style="cursor: pointer; padding: 3px; display: flex; align-items: center;" onclick="flyToLocation(-73.9952319, 40.7256221, {&quot;age_score&quot;:&quot;6.5&quot;,&quot;attractive_score&quot;:&quot;10.0&quot;,&quot;category&quot;:&quot;Asian restaurant&quot;,&quot;gender_score&quot;:&quot;7.2&quot;,&quot;lat&quot;:40.7256221,&quot;long&quot;:-73.9952319,&quot;faces&quot;:128,&quot;name&quot;:&quot;KYU NYC&quot;,&quot;hood&quot;:&quot;NoHo&quot;})">
+            <img src="data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2220%22%20height%3D%2234.89%22%20viewBox%3D%220%200%2020%2034.89%22%3E%3Cpath%20d%3D%22m%20817.11249%2C282.97118%20c%20-1.25816%2C1.34277%20-2.04623%2C3.29881%20-2.01563%2C5.13867%200.0639%2C3.84476%201.79693%2C5.3002%204.56836%2C10.59179%200.99832%2C2.32851%202.04027%2C4.79237%203.03125%2C8.87305%200.13772%2C0.60193%200.27203%2C1.16104%200.33416%2C1.20948%200.0621%2C0.0485%200.19644%2C-0.51262%200.33416%2C-1.11455%200.99098%2C-4.08068%202.03293%2C-6.54258%203.03125%2C-8.87109%202.77143%2C-5.29159%204.50444%2C-6.74704%204.56836%2C-10.5918%200.0306%2C-1.83986%20-0.75942%2C-3.79785%20-2.01758%2C-5.14062%20-1.43724%2C-1.53389%20-3.60504%2C-2.66908%20-5.91619%2C-2.71655%20-2.31115%2C-0.0475%20-4.4809%2C1.08773%20-5.91814%2C2.62162%20z%22%20style%3D%22fill%3Argb(255%2C%200%2C%200)%3Bstroke%3A%23000000%3Bstroke-width%3A1%3Bstroke-miterlimit%3A4%3Bstroke-opacity%3A1%22%20transform%3D%22translate(-814.59595%2C-274.38623)%22%2F%3E%3Ccircle%20r%3D%223.0355%22%20cy%3D%2213.86655%22%20cx%3D%228.43469%22%20style%3D%22fill%3A%23000000%22%2F%3E%3C%2Fsvg%3E" class="result-pin">
+            <div class="result-info" style="flex: 1;">
+              <span class="result-name">KYU NYC</span>
+              <span class="result-hood" style="display: block; font-size: 12px; color: #666;">NoHo</span>
+            </div>
+            <div class="result-score" style="margin-left: 8px;">
+              10.0/10
+            </div>
+          </div>
+        
+          <div style="cursor: pointer; padding: 3px; display: flex; align-items: center;" onclick="flyToLocation(-74.0089157, 40.7097945, {&quot;age_score&quot;:&quot;8.3&quot;,&quot;attractive_score&quot;:&quot;10.0&quot;,&quot;category&quot;:&quot;Thai restaurant&quot;,&quot;gender_score&quot;:&quot;5.9&quot;,&quot;lat&quot;:40.7097945,&quot;long&quot;:-74.0089157,&quot;faces&quot;:172,&quot;name&quot;:&quot;Aroy Dee Thai Kitchen&quot;,&quot;hood&quot;:&quot;Financial District&quot;})">
+            <img src="data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2220%22%20height%3D%2234.89%22%20viewBox%3D%220%200%2020%2034.89%22%3E%3Cpath%20d%3D%22m%20817.11249%2C282.97118%20c%20-1.25816%2C1.34277%20-2.04623%2C3.29881%20-2.01563%2C5.13867%200.0639%2C3.84476%201.79693%2C5.3002%204.56836%2C10.59179%200.99832%2C2.32851%202.04027%2C4.79237%203.03125%2C8.87305%200.13772%2C0.60193%200.27203%2C1.16104%200.33416%2C1.20948%200.0621%2C0.0485%200.19644%2C-0.51262%200.33416%2C-1.11455%200.99098%2C-4.08068%202.03293%2C-6.54258%203.03125%2C-8.87109%202.77143%2C-5.29159%204.50444%2C-6.74704%204.56836%2C-10.5918%200.0306%2C-1.83986%20-0.75942%2C-3.79785%20-2.01758%2C-5.14062%20-1.43724%2C-1.53389%20-3.60504%2C-2.66908%20-5.91619%2C-2.71655%20-2.31115%2C-0.0475%20-4.4809%2C1.08773%20-5.91814%2C2.62162%20z%22%20style%3D%22fill%3Argb(255%2C%200%2C%200)%3Bstroke%3A%23000000%3Bstroke-width%3A1%3Bstroke-miterlimit%3A4%3Bstroke-opacity%3A1%22%20transform%3D%22translate(-814.59595%2C-274.38623)%22%2F%3E%3Ccircle%20r%3D%223.0355%22%20cy%3D%2213.86655%22%20cx%3D%228.43469%22%20style%3D%22fill%3A%23000000%22%2F%3E%3C%2Fsvg%3E" class="result-pin">
+            <div class="result-info" style="flex: 1;">
+              <span class="result-name">Aroy Dee Thai Kitchen</span>
+              <span class="result-hood" style="display: block; font-size: 12px; color: #666;">Financial District</span>
+            </div>
+            <div class="result-score" style="margin-left: 8px;">
+              10.0/10
+            </div>
+          </div>
+        
+          <div style="cursor: pointer; padding: 3px; display: flex; align-items: center;" onclick="flyToLocation(-74.0042366, 40.7299486, {&quot;age_score&quot;:&quot;8.4&quot;,&quot;attractive_score&quot;:&quot;10.0&quot;,&quot;category&quot;:&quot;Thai restaurant&quot;,&quot;gender_score&quot;:&quot;6.4&quot;,&quot;lat&quot;:40.7299486,&quot;long&quot;:-74.0042366,&quot;faces&quot;:188,&quot;name&quot;:&quot;Top Thai 55 Carmine&quot;,&quot;hood&quot;:&quot;West Village&quot;})">
+            <img src="data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2220%22%20height%3D%2234.89%22%20viewBox%3D%220%200%2020%2034.89%22%3E%3Cpath%20d%3D%22m%20817.11249%2C282.97118%20c%20-1.25816%2C1.34277%20-2.04623%2C3.29881%20-2.01563%2C5.13867%200.0639%2C3.84476%201.79693%2C5.3002%204.56836%2C10.59179%200.99832%2C2.32851%202.04027%2C4.79237%203.03125%2C8.87305%200.13772%2C0.60193%200.27203%2C1.16104%200.33416%2C1.20948%200.0621%2C0.0485%200.19644%2C-0.51262%200.33416%2C-1.11455%200.99098%2C-4.08068%202.03293%2C-6.54258%203.03125%2C-8.87109%202.77143%2C-5.29159%204.50444%2C-6.74704%204.56836%2C-10.5918%200.0306%2C-1.83986%20-0.75942%2C-3.79785%20-2.01758%2C-5.14062%20-1.43724%2C-1.53389%20-3.60504%2C-2.66908%20-5.91619%2C-2.71655%20-2.31115%2C-0.0475%20-4.4809%2C1.08773%20-5.91814%2C2.62162%20z%22%20style%3D%22fill%3Argb(255%2C%200%2C%200)%3Bstroke%3A%23000000%3Bstroke-width%3A1%3Bstroke-miterlimit%3A4%3Bstroke-opacity%3A1%22%20transform%3D%22translate(-814.59595%2C-274.38623)%22%2F%3E%3Ccircle%20r%3D%223.0355%22%20cy%3D%2213.86655%22%20cx%3D%228.43469%22%20style%3D%22fill%3A%23000000%22%2F%3E%3C%2Fsvg%3E" class="result-pin">
+            <div class="result-info" style="flex: 1;">
+              <span class="result-name">Top Thai 55 Carmine</span>
+              <span class="result-hood" style="display: block; font-size: 12px; color: #666;">West Village</span>
+            </div>
+            <div class="result-score" style="margin-left: 8px;">
+              10.0/10
+            </div>
+          </div>
+        
+      </div>
+    </div>
+    <div>
+      <h4 style="margin-bottom: 8px;">Top 5 not</h4>
+      <div class="results-group">
+        
+          <div style="cursor: pointer; padding: 3px; display: flex; align-items: center;" onclick="flyToLocation(-73.9363479, 40.8208351, {&quot;age_score&quot;:&quot;3.3&quot;,&quot;attractive_score&quot;:&quot;1.0&quot;,&quot;category&quot;:&quot;Hamburger restaurant&quot;,&quot;gender_score&quot;:&quot;5.6&quot;,&quot;lat&quot;:40.8208351,&quot;long&quot;:-73.9363479,&quot;faces&quot;:142,&quot;name&quot;:&quot;Jimbos Hamburger&quot;,&quot;hood&quot;:&quot;Harlem&quot;})">
+            <img src="data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2220%22%20height%3D%2234.89%22%20viewBox%3D%220%200%2020%2034.89%22%3E%3Cpath%20d%3D%22m%20817.11249%2C282.97118%20c%20-1.25816%2C1.34277%20-2.04623%2C3.29881%20-2.01563%2C5.13867%200.0639%2C3.84476%201.79693%2C5.3002%204.56836%2C10.59179%200.99832%2C2.32851%202.04027%2C4.79237%203.03125%2C8.87305%200.13772%2C0.60193%200.27203%2C1.16104%200.33416%2C1.20948%200.0621%2C0.0485%200.19644%2C-0.51262%200.33416%2C-1.11455%200.99098%2C-4.08068%202.03293%2C-6.54258%203.03125%2C-8.87109%202.77143%2C-5.29159%204.50444%2C-6.74704%204.56836%2C-10.5918%200.0306%2C-1.83986%20-0.75942%2C-3.79785%20-2.01758%2C-5.14062%20-1.43724%2C-1.53389%20-3.60504%2C-2.66908%20-5.91619%2C-2.71655%20-2.31115%2C-0.0475%20-4.4809%2C1.08773%20-5.91814%2C2.62162%20z%22%20style%3D%22fill%3Argb(0%2C%200%2C%20255)%3Bstroke%3A%23000000%3Bstroke-width%3A1%3Bstroke-miterlimit%3A4%3Bstroke-opacity%3A1%22%20transform%3D%22translate(-814.59595%2C-274.38623)%22%2F%3E%3Ccircle%20r%3D%223.0355%22%20cy%3D%2213.86655%22%20cx%3D%228.43469%22%20style%3D%22fill%3A%23000000%22%2F%3E%3C%2Fsvg%3E" class="result-pin">
+            <div class="result-info" style="flex: 1;">
+              <span class="result-name">Jimbos Hamburger</span>
+              <span class="result-hood" style="display: block; font-size: 12px; color: #666;">Harlem</span>
+            </div>
+            <div class="result-score" style="margin-left: 8px;">
+              1.0/10
+            </div>
+          </div>
+        
+          <div style="cursor: pointer; padding: 3px; display: flex; align-items: center;" onclick="flyToLocation(-73.9739666, 40.7532541, {&quot;age_score&quot;:&quot;4.8&quot;,&quot;attractive_score&quot;:&quot;1.0&quot;,&quot;category&quot;:&quot;Chinese restaurant&quot;,&quot;gender_score&quot;:&quot;3.1&quot;,&quot;lat&quot;:40.7532541,&quot;long&quot;:-73.9739666,&quot;faces&quot;:95,&quot;name&quot;:&quot;Hop Won Express&quot;,&quot;hood&quot;:&quot;Midtown East&quot;})">
+            <img src="data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2220%22%20height%3D%2234.89%22%20viewBox%3D%220%200%2020%2034.89%22%3E%3Cpath%20d%3D%22m%20817.11249%2C282.97118%20c%20-1.25816%2C1.34277%20-2.04623%2C3.29881%20-2.01563%2C5.13867%200.0639%2C3.84476%201.79693%2C5.3002%204.56836%2C10.59179%200.99832%2C2.32851%202.04027%2C4.79237%203.03125%2C8.87305%200.13772%2C0.60193%200.27203%2C1.16104%200.33416%2C1.20948%200.0621%2C0.0485%200.19644%2C-0.51262%200.33416%2C-1.11455%200.99098%2C-4.08068%202.03293%2C-6.54258%203.03125%2C-8.87109%202.77143%2C-5.29159%204.50444%2C-6.74704%204.56836%2C-10.5918%200.0306%2C-1.83986%20-0.75942%2C-3.79785%20-2.01758%2C-5.14062%20-1.43724%2C-1.53389%20-3.60504%2C-2.66908%20-5.91619%2C-2.71655%20-2.31115%2C-0.0475%20-4.4809%2C1.08773%20-5.91814%2C2.62162%20z%22%20style%3D%22fill%3Argb(0%2C%200%2C%20255)%3Bstroke%3A%23000000%3Bstroke-width%3A1%3Bstroke-miterlimit%3A4%3Bstroke-opacity%3A1%22%20transform%3D%22translate(-814.59595%2C-274.38623)%22%2F%3E%3Ccircle%20r%3D%223.0355%22%20cy%3D%2213.86655%22%20cx%3D%228.43469%22%20style%3D%22fill%3A%23000000%22%2F%3E%3C%2Fsvg%3E" class="result-pin">
+            <div class="result-info" style="flex: 1;">
+              <span class="result-name">Hop Won Express</span>
+              <span class="result-hood" style="display: block; font-size: 12px; color: #666;">Midtown East</span>
+            </div>
+            <div class="result-score" style="margin-left: 8px;">
+              1.0/10
+            </div>
+          </div>
+        
+          <div style="cursor: pointer; padding: 3px; display: flex; align-items: center;" onclick="flyToLocation(-73.9437731, 40.7985866, {&quot;age_score&quot;:&quot;4.4&quot;,&quot;attractive_score&quot;:&quot;1.0&quot;,&quot;category&quot;:&quot;Puerto Rican restaurant&quot;,&quot;gender_score&quot;:&quot;6.1&quot;,&quot;lat&quot;:40.7985866,&quot;long&quot;:-73.9437731,&quot;faces&quot;:59,&quot;name&quot;:&quot;Cocotazo&quot;,&quot;hood&quot;:&quot;East Harlem&quot;})">
+            <img src="data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2220%22%20height%3D%2234.89%22%20viewBox%3D%220%200%2020%2034.89%22%3E%3Cpath%20d%3D%22m%20817.11249%2C282.97118%20c%20-1.25816%2C1.34277%20-2.04623%2C3.29881%20-2.01563%2C5.13867%200.0639%2C3.84476%201.79693%2C5.3002%204.56836%2C10.59179%200.99832%2C2.32851%202.04027%2C4.79237%203.03125%2C8.87305%200.13772%2C0.60193%200.27203%2C1.16104%200.33416%2C1.20948%200.0621%2C0.0485%200.19644%2C-0.51262%200.33416%2C-1.11455%200.99098%2C-4.08068%202.03293%2C-6.54258%203.03125%2C-8.87109%202.77143%2C-5.29159%204.50444%2C-6.74704%204.56836%2C-10.5918%200.0306%2C-1.83986%20-0.75942%2C-3.79785%20-2.01758%2C-5.14062%20-1.43724%2C-1.53389%20-3.60504%2C-2.66908%20-5.91619%2C-2.71655%20-2.31115%2C-0.0475%20-4.4809%2C1.08773%20-5.91814%2C2.62162%20z%22%20style%3D%22fill%3Argb(0%2C%200%2C%20255)%3Bstroke%3A%23000000%3Bstroke-width%3A1%3Bstroke-miterlimit%3A4%3Bstroke-opacity%3A1%22%20transform%3D%22translate(-814.59595%2C-274.38623)%22%2F%3E%3Ccircle%20r%3D%223.0355%22%20cy%3D%2213.86655%22%20cx%3D%228.43469%22%20style%3D%22fill%3A%23000000%22%2F%3E%3C%2Fsvg%3E" class="result-pin">
+            <div class="result-info" style="flex: 1;">
+              <span class="result-name">Cocotazo</span>
+              <span class="result-hood" style="display: block; font-size: 12px; color: #666;">East Harlem</span>
+            </div>
+            <div class="result-score" style="margin-left: 8px;">
+              1.0/10
+            </div>
+          </div>
+        
+          <div style="cursor: pointer; padding: 3px; display: flex; align-items: center;" onclick="flyToLocation(-73.9739876, 40.7518635, {&quot;age_score&quot;:&quot;4.3&quot;,&quot;attractive_score&quot;:&quot;1.0&quot;,&quot;category&quot;:&quot;Bar &amp; grill&quot;,&quot;gender_score&quot;:&quot;4.5&quot;,&quot;lat&quot;:40.7518635,&quot;long&quot;:-73.9739876,&quot;faces&quot;:94,&quot;name&quot;:&quot;Malone's Irish Bar &amp; Restaurant&quot;,&quot;hood&quot;:&quot;Midtown East&quot;})">
+            <img src="data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2220%22%20height%3D%2234.89%22%20viewBox%3D%220%200%2020%2034.89%22%3E%3Cpath%20d%3D%22m%20817.11249%2C282.97118%20c%20-1.25816%2C1.34277%20-2.04623%2C3.29881%20-2.01563%2C5.13867%200.0639%2C3.84476%201.79693%2C5.3002%204.56836%2C10.59179%200.99832%2C2.32851%202.04027%2C4.79237%203.03125%2C8.87305%200.13772%2C0.60193%200.27203%2C1.16104%200.33416%2C1.20948%200.0621%2C0.0485%200.19644%2C-0.51262%200.33416%2C-1.11455%200.99098%2C-4.08068%202.03293%2C-6.54258%203.03125%2C-8.87109%202.77143%2C-5.29159%204.50444%2C-6.74704%204.56836%2C-10.5918%200.0306%2C-1.83986%20-0.75942%2C-3.79785%20-2.01758%2C-5.14062%20-1.43724%2C-1.53389%20-3.60504%2C-2.66908%20-5.91619%2C-2.71655%20-2.31115%2C-0.0475%20-4.4809%2C1.08773%20-5.91814%2C2.62162%20z%22%20style%3D%22fill%3Argb(0%2C%200%2C%20255)%3Bstroke%3A%23000000%3Bstroke-width%3A1%3Bstroke-miterlimit%3A4%3Bstroke-opacity%3A1%22%20transform%3D%22translate(-814.59595%2C-274.38623)%22%2F%3E%3Ccircle%20r%3D%223.0355%22%20cy%3D%2213.86655%22%20cx%3D%228.43469%22%20style%3D%22fill%3A%23000000%22%2F%3E%3C%2Fsvg%3E" class="result-pin">
+            <div class="result-info" style="flex: 1;">
+              <span class="result-name">Malone's Irish Bar &amp; Restaurant</span>
+              <span class="result-hood" style="display: block; font-size: 12px; color: #666;">Midtown East</span>
+            </div>
+            <div class="result-score" style="margin-left: 8px;">
+              1.0/10
+            </div>
+          </div>
+        
+          <div style="cursor: pointer; padding: 3px; display: flex; align-items: center;" onclick="flyToLocation(-73.97635609999999, 40.762163, {&quot;age_score&quot;:&quot;5.3&quot;,&quot;attractive_score&quot;:&quot;1.0&quot;,&quot;category&quot;:&quot;Fine dining restaurant&quot;,&quot;gender_score&quot;:&quot;3.4&quot;,&quot;lat&quot;:40.762163,&quot;long&quot;:-73.97635609999999,&quot;faces&quot;:145,&quot;name&quot;:&quot;Michael's New York&quot;,&quot;hood&quot;:&quot;Midtown East&quot;})">
+            <img src="data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2220%22%20height%3D%2234.89%22%20viewBox%3D%220%200%2020%2034.89%22%3E%3Cpath%20d%3D%22m%20817.11249%2C282.97118%20c%20-1.25816%2C1.34277%20-2.04623%2C3.29881%20-2.01563%2C5.13867%200.0639%2C3.84476%201.79693%2C5.3002%204.56836%2C10.59179%200.99832%2C2.32851%202.04027%2C4.79237%203.03125%2C8.87305%200.13772%2C0.60193%200.27203%2C1.16104%200.33416%2C1.20948%200.0621%2C0.0485%200.19644%2C-0.51262%200.33416%2C-1.11455%200.99098%2C-4.08068%202.03293%2C-6.54258%203.03125%2C-8.87109%202.77143%2C-5.29159%204.50444%2C-6.74704%204.56836%2C-10.5918%200.0306%2C-1.83986%20-0.75942%2C-3.79785%20-2.01758%2C-5.14062%20-1.43724%2C-1.53389%20-3.60504%2C-2.66908%20-5.91619%2C-2.71655%20-2.31115%2C-0.0475%20-4.4809%2C1.08773%20-5.91814%2C2.62162%20z%22%20style%3D%22fill%3Argb(0%2C%200%2C%20255)%3Bstroke%3A%23000000%3Bstroke-width%3A1%3Bstroke-miterlimit%3A4%3Bstroke-opacity%3A1%22%20transform%3D%22translate(-814.59595%2C-274.38623)%22%2F%3E%3Ccircle%20r%3D%223.0355%22%20cy%3D%2213.86655%22%20cx%3D%228.43469%22%20style%3D%22fill%3A%23000000%22%2F%3E%3C%2Fsvg%3E" class="result-pin">
+            <div class="result-info" style="flex: 1;">
+              <span class="result-name">Michael's New York</span>
+              <span class="result-hood" style="display: block; font-size: 12px; color: #666;">Midtown East</span>
+            </div>
+            <div class="result-score" style="margin-left: 8px;">
+              1.0/10
+            </div>
+          </div>
+        
+      </div>
+    </div>
+  </div></div><div class="pix" style="margin-top: 20px; font-size: 12px; color: #666; text-align: center;"><a href="/paper.pdf" style="color: #666; text-decoration: none; border-bottom: 1px dotted #666;">Methodology</a> • 
+Made by <a href="https://walzr.com" style="color: #666; text-decoration: none; border-bottom: 1px dotted #666;">walzr.com</a></div></div><div id="map-area"><div class="pix" id="map-controls"><div class="pan-control"><img class="pan-shadow" src="/map-controls/panshadow.png" draggable="false"><img class="pan-north" src="/map-controls/north.png" title="Go up" draggable="false"><img class="pan-east" src="/map-controls/east.png" title="Go right" draggable="false"><img class="pan-south" src="/map-controls/south.png" title="Go down" draggable="false"><img class="pan-west" src="/map-controls/west.png" title="Go left" draggable="false"><img class="pan-center" src="/map-controls/center.png" title="Return to center" draggable="false"></div><div class="zoom-control"><img class="zoom-plus" src="/map-controls/zoom-plus.png" title="Zoom in" draggable="false"><img class="zoom-minus" src="/map-controls/zoom-minus.png" title="Zoom out" draggable="false"><img class="slider-shadow" src="/map-controls/slidershadow.png" draggable="false"><div class="slider-container"><img class="slider-bar" src="/map-controls/sliderbar.png" draggable="false"><img class="slider-handle" src="/map-controls/slider.png" title="Drag to zoom" draggable="false" style="top: 17px; cursor: grab;"></div></div></div><div class="pix" id="map-modes"><div class="mode-selector"><button class="mode-button active" data-mode="hot">HOT</button><button class="mode-button" data-mode="age">AGE</button><button class="mode-button" data-mode="gender">GENDER</button></div><div class="mode-legend"><span class="legend-left">HOT</span><div class="legend-gradient" style="background: linear-gradient(to right, rgb(255, 0, 0), white, rgb(0, 0, 255));"></div><span class="legend-right">NOT</span></div></div><div class="pix" id="city-bar"><span style="margin-right: 10px; font-weight: bold;" id="available">Available in</span><a class="city-link city-active" href="#"><img class="city-icon" src="/ny.png"><span>New York</span></a><a class="city-link city-inactive" href="#"><img class="city-icon" src="/la.png"><span>Los Angeles</span></a><a class="city-link city-inactive" href="#"><img class="city-icon" src="/sf.png"><span>San Francisco</span></a></div><div id="map" class="mapboxgl-map"><div class="mapboxgl-canary" style="visibility: hidden;"></div><div class="mapboxgl-canvas-container mapboxgl-interactive mapboxgl-touch-drag-pan mapboxgl-touch-zoom-rotate"><canvas class="mapboxgl-canvas" tabindex="0" aria-label="Map" role="region" width="890" height="764" style="width: 890px; height: 763.75px; image-rendering: pixelated;"></canvas></div><div class="mapboxgl-control-container"><div class="mapboxgl-ctrl-top-left"></div><div class="mapboxgl-ctrl-top-right"></div><div class="mapboxgl-ctrl-bottom-left"><div class="mapboxgl-ctrl" style="display: block;"><a class="mapboxgl-ctrl-logo" target="_blank" rel="noopener nofollow" href="https://www.mapbox.com/" aria-label="Mapbox logo"></a></div></div><div class="mapboxgl-ctrl-bottom-right"></div></div><div class="mapboxgl-popup mapboxgl-popup-anchor-bottom" style="max-width: 240px; transform: translate(-50%, -100%) translate(445px, 357px);"><div class="mapboxgl-popup-tip"></div><div class="mapboxgl-popup-content">
+    <div class="pix popup-container">
+      <div class="popup-header">
+        <div style="flex: 1;">
+          <strong style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; max-width: 148px;">Michael's New York</strong>
+          <span class="popup-info">Fine dining</span>
+        </div>
+        <div class="popup-score" style="background-color: rgb(0, 0, 255); padding: 2px 6px; border-radius: 4px; color: white;">1.0/10</div>
+      </div>
+
+      <div class="popup-metrics">
+        <div class="metric-container">
+          <div class="metric-bar">
+            <div class="metric-indicator" style="left: 10%;"></div>
+          </div>
+          <div class="metric-labels">
+            <span>Not</span>
+            <span>Hot</span>
+          </div>
+        </div>
+
+        <div class="metric-container">
+          <div class="metric-bar">
+            <div class="metric-indicator" style="left: 53%;"></div>
+          </div>
+          <div class="metric-labels">
+            <span>Old</span>
+            <span>Young</span>
+          </div>
+        </div>
+
+        <div class="metric-container">
+          <div class="metric-bar">
+            <div class="metric-indicator" style="left: 34%;"></div>
+          </div>
+          <div class="metric-labels">
+            <span>Male</span>
+            <span>Female</span>
+          </div>
+        </div>
+        
+        <div style="text-align: center; font-size: 11px; color: #777; margin-top: 10px; border-top: 1px solid #eee; padding-top: 5px;">
+          145 reviewers analyzed
+        </div>
+      </div>
+    </div>
+  <button class="mapboxgl-popup-close-button" type="button" aria-label="Close popup" aria-hidden="true">×</button></div></div></div><div id="retro-overlay"></div><div class="map-attribution-left">© 2025 Looksmapping</div><div class="map-attribution-right">Map data © <a href="https://www.openstreetmap.org/" style="color: black; text-decoration: none">OpenStreetMap</a>, <a href="https://www.mapbox.com/" style="color: black; text-decoration: none">Mapbox</a></div></div><script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script><script>mapboxgl.accessToken = 'pk.eyJ1Ijoid2FseiIsImEiOiJjazlyYzFxM2EwcmM2M3NydGM5dTZidWkwIn0.SU74SuQeR3O4PuO_KgFVyg';
+const map = new mapboxgl.Map({
+  container: 'map',
+  style: 'mapbox://styles/walz/cm8lb6yaz01db01sscfm6aaof',
+  center: [-74.5, 40],
+  zoom: 9,
+  attributionControl: false,
+  antialias: false,
+  fadeDuration: 0,
+  crossFadeDuration: 0,
+  transition: {
+    duration: 0,
+    delay: 0
+  }
+});
+
+
+
+// Add pixelation effect after map loads
+map.on('load', function() {
+  updateRankingsDisplay()
+  // Downscale/upscale effect for pixelation
+  const pixelationFactor = 3; // Higher = more pixelated
+  
+  // Apply pixelation to the map canvas
+  const canvas = document.querySelector('.mapboxgl-canvas');
+  if (canvas) {
+    // Force the map to use nearest-neighbor scaling
+    canvas.style.imageRendering = 'pixelated';
+    
+    // Force labels to use aliased rendering
+    document.querySelectorAll('.mapboxgl-marker, .mapboxgl-popup')
+      .forEach(el => {
+        el.style.fontSmooth = 'never';
+        el.style.webkitFontSmoothing = 'none';
+      });
+  }
+  
+  // Apply old-school styling to all text labels in the map style
+  const style = map.getStyle();
+  
+  // Process all layers in the style
+  style.layers.forEach(layer => {
+    // Check if the layer has text-related properties
+    if (layer.type === 'symbol' && layer.layout && layer.layout['text-field']) {
+      // Disable text halo blur for sharper edges
+      if (layer.paint && layer.paint['text-halo-blur']) {
+        map.setPaintProperty(layer.id, 'text-halo-blur', 0);
+      }
+      
+      // Ensure text has high contrast
+      if (layer.paint) {
+        // Make sure text is not semi-transparent
+        if (layer.paint['text-opacity']) {
+          map.setPaintProperty(layer.id, 'text-opacity', 1);
+        }
+      }
+      
+      // Optional: Round text sizes to whole pixels
+      if (layer.layout['text-size']) {
+        const currentSize = layer.layout['text-size'];
+        if (typeof currentSize === 'number') {
+          map.setLayoutProperty(layer.id, 'text-size', Math.floor(currentSize));
+        }
+      }
+    }
+  });
+
+  // Initialize zoom slider position
+  const initialZoom = map.getZoom();
+  const initialTopPosition = ((18 - initialZoom) / 18) * 153;
+  document.querySelector('.slider-handle').style.top = initialTopPosition + 'px';
+});
+
+// City configurations
+const cityConfigs = {
+  ny: {
+    center: [-73.99500657647957, 40.73653166523988],
+    zoom: 12.905477962190917
+  },
+  sf: {
+    center: [-122.4136541280476, 37.78464407695378],
+    zoom: 13.727669036468848
+  },
+  la: {
+    center: [-118.49352211180002, 34.01429982135038],
+    zoom: 13.8828812294801
+  }
+};
+
+let currentCity = 'ny'; // Default city
+
+// Function to update UI for city selection
+function updateCityUI(city) {
+  document.querySelectorAll('.city-link').forEach(link => {
+    const cityText = link.textContent.trim();
+    if ((city === 'ny' && cityText === 'New York') ||
+        (city === 'la' && cityText === 'Los Angeles') ||
+        (city === 'sf' && cityText === 'San Francisco')) {
+      link.classList.remove('city-inactive');
+      link.classList.add('city-active');
+    } else {
+      link.classList.remove('city-active');
+      link.classList.add('city-inactive');
+    }
+  });
+}
+
+// Add this flag
+let initialLoadComplete = false;
+
+// Add this function before the updateMarkers function
+function isColorDark(color) {
+  // Extract RGB values from color string
+  const rgb = color.match(/\d+/g);
+  if (!rgb) return true;
+  
+  // Calculate relative luminance using Digital ITU BT.709 coefficients
+  const luminance = (0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2]) / 255;
+  return luminance < 0.5;
+}
+
+// Add these variables for efficient marker rendering
+let markersSource = null;
+let markerClickHandler = null;
+
+// Add this variable to store the loaded GeoJSON data for each city
+const cityData = {
+  ny: null,
+  la: null,
+  sf: null
+};
+
+// Function to fetch and decompress GeoJSON data
+async function loadCityData(city) {
+  if (cityData[city]) return cityData[city]; // Return cached data if available
+  
+  try {
+    const response = await fetch(`/places_${city}.geojson.gz`);
+    if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+    
+    const compressedData = new Uint8Array(await response.arrayBuffer());
+    const decompressedData = pako.inflate(compressedData, { to: 'string' });
+    const jsonData = JSON.parse(decompressedData);
+    
+    cityData[city] = jsonData; // Cache the data
+    return jsonData;
+  } catch (error) {
+    console.error(`Error loading data for ${city}:`, error);
+    return null;
+  }
+}
+
+// Replace updateMarkers function with this version
+async function updateMarkers() {
+  const data = await loadCityData(currentCity);
+  if (!data || !data.features) return;
+
+  const places = data.features.map(feature => ({
+    ...feature.properties,
+    long: feature.geometry.coordinates[0],
+    lat: feature.geometry.coordinates[1]
+  }));
+
+  // Create unique colors for markers
+  const uniqueColors = [...new Set(places.map(place => getColorForScore(place)))];
+  
+  // Load marker images
+  const imagePromises = uniqueColors.map(color => {
+    const imageId = `pin-${color.replace(/[^0-9a-zA-Z]/g, '-')}`;
+    
+    if (!map.hasImage(imageId)) {
+      return new Promise((resolve, reject) => {
+        const svgPin = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="34.89" viewBox="0 0 20 34.89"><path d="m 817.11249,282.97118 c -1.25816,1.34277 -2.04623,3.29881 -2.01563,5.13867 0.0639,3.84476 1.79693,5.3002 4.56836,10.59179 0.99832,2.32851 2.04027,4.79237 3.03125,8.87305 0.13772,0.60193 0.27203,1.16104 0.33416,1.20948 0.0621,0.0485 0.19644,-0.51262 0.33416,-1.11455 0.99098,-4.08068 2.03293,-6.54258 3.03125,-8.87109 2.77143,-5.29159 4.50444,-6.74704 4.56836,-10.5918 0.0306,-1.83986 -0.75942,-3.79785 -2.01758,-5.14062 -1.43724,-1.53389 -3.60504,-2.66908 -5.91619,-2.71655 -2.31115,-0.0475 -4.4809,1.08773 -5.91814,2.62162 z" style="fill:${color};stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1" transform="translate(-814.59595,-274.38623)"/><circle r="3.0355" cy="13.86655" cx="8.43469" style="fill:#000000"/></svg>`;
+        
+        const img = new Image();
+        img.onload = () => {
+          map.addImage(imageId, img);
+          resolve();
+        };
+        img.onerror = reject;
+        img.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgPin)}`;
+      });
+    }
+    return Promise.resolve();
+  });
+
+  await Promise.all(imagePromises);
+
+  // Create GeoJSON features
+  const features = places.map(place => ({
+    type: 'Feature',
+    geometry: {
+      type: 'Point',
+      coordinates: [place.long, place.lat]
+    },
+    properties: {
+      ...place,
+      color: getColorForScore(place),
+      imageId: `pin-${getColorForScore(place).replace(/[^0-9a-zA-Z]/g, '-')}`
+    }
+  }));
+
+  const geojsonData = {
+    type: 'FeatureCollection',
+    features: features
+  };
+
+  // Initialize or update the source
+  if (!markersSource) {
+    map.addSource('markers', {
+      type: 'geojson',
+      data: geojsonData,
+      cluster: false
+    });
+    markersSource = true;
+
+    map.addLayer({
+      id: 'markers-icon',
+      type: 'symbol',
+      source: 'markers',
+      layout: {
+        'icon-image': ['get', 'imageId'],
+        'icon-size': 1,
+        'icon-allow-overlap': true,
+        'icon-anchor': 'bottom'
+      }
+    });
+
+    // Setup click handling for markers
+    map.on('click', 'markers-icon', (e) => {
+      if (Date.now() - lastMapMoveTime < CLICK_DELAY_THRESHOLD) return;
+
+      const features = map.queryRenderedFeatures(e.point, { layers: ['markers-icon'] });
+      if (!features.length) return;
+
+      // Close any existing popup
+      if (currentPopup) {
+        currentPopup.remove();
+        currentPopup = null;
+      }
+
+      const feature = features[0];
+      const props = feature.properties;
+
+      const isMobile = window.innerWidth <= 768;
+      const popupContent = createPopupContent(props);
+
+      if (isMobile) {
+        modal.innerHTML = popupContent;
+        modal.style.display = 'block';
+        backdrop.style.display = 'block';
+      } else {
+        currentPopup = new mapboxgl.Popup({ offset: 25 })
+          .setLngLat(feature.geometry.coordinates)
+          .setHTML(popupContent)
+          .addTo(map);
+      }
+    });
+
+    map.on('mouseenter', 'markers-icon', () => {
+      map.getCanvas().style.cursor = 'pointer';
+    });
+
+    map.on('mouseleave', 'markers-icon', () => {
+      map.getCanvas().style.cursor = '';
+    });
+  } else {
+    map.getSource('markers').setData(geojsonData);
+  }
+
+  initialLoadComplete = true;
+}
+
+// Helper function to create popup content
+function createPopupContent(place) {
+  return `
+    <div class="pix popup-container">
+      <div class="popup-header">
+        <div style="flex: 1;">
+          <strong style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; ${window.innerWidth > 768 ? 'max-width: 148px;' : ''}">${place.name}</strong>
+          <span class="popup-info">${place.category?.replace(' restaurant', '')}</span>
+        </div>
+        <div class="popup-score" style="background-color: ${getColorForScore(place)}; padding: 2px 6px; border-radius: 4px; color: ${isColorDark(getColorForScore(place)) ? 'white' : 'black'};">${place.attractive_score}/10</div>
+      </div>
+
+      <div class="popup-metrics">
+        <div class="metric-container">
+          <div class="metric-bar">
+            <div class="metric-indicator" style="left: ${(place.attractive_score/10)*100}%;"></div>
+          </div>
+          <div class="metric-labels">
+            <span>Not</span>
+            <span>Hot</span>
+          </div>
+        </div>
+
+        <div class="metric-container">
+          <div class="metric-bar">
+            <div class="metric-indicator" style="left: ${(place.age_score/10)*100}%;"></div>
+          </div>
+          <div class="metric-labels">
+            <span>Old</span>
+            <span>Young</span>
+          </div>
+        </div>
+
+        <div class="metric-container">
+          <div class="metric-bar">
+            <div class="metric-indicator" style="left: ${(place.gender_score/10)*100}%;"></div>
+          </div>
+          <div class="metric-labels">
+            <span>Male</span>
+            <span>Female</span>
+          </div>
+        </div>
+        
+        <div style="text-align: center; font-size: 11px; color: #777; margin-top: 10px; border-top: 1px solid #eee; padding-top: 5px;">
+          ${place.faces} reviewers analyzed
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// Update the clearMarkers function
+function clearMarkers() {
+  // No need to manually remove markers when using a geojson source
+  // The source data update handles this automatically
+}
+
+// Function to switch city
+function switchCity(city, animate = true) {
+  //- console.log("Switching to", city)
+  currentCity = city;
+  updateCityUI(city);
+  map.flyTo({
+    center: cityConfigs[city].center,
+    zoom: cityConfigs[city].zoom,
+    duration: animate ? 1000 : 0
+  });
+  
+  if (initialLoadComplete) {
+    updateMarkers();
+    updateRankingsDisplay();
+  }
+}
+
+// Detect closest city based on map center
+function detectClosestCity(lng, lat) {
+  const distances = Object.entries(cityConfigs).map(([city, config]) => {
+    const dx = config.center[0] - lng;
+    const dy = config.center[1] - lat;
+    //- console.log(config.center, lng, lat)
+    //- console.log({
+    //-   city,
+    //-   distance: Math.sqrt(dx * dx + dy * dy)
+    //- })
+    return {
+      city,
+      distance: Math.sqrt(dx * dx + dy * dy)
+    };
+  });
+  return distances.reduce((a, b) => a.distance < b.distance ? a : b).city;
+}
+
+// Get initial city from server-side rendered variable
+const initialCity = 'ny';
+switchCity(initialCity, false);
+
+// Add click handlers for city links
+document.querySelectorAll('.city-link').forEach(link => {
+  link.addEventListener('click', (e) => {
+    e.preventDefault();
+    const cityText = link.querySelector('span').textContent.trim();
+    const city = cityText === 'New York' ? 'ny' :
+                cityText === 'Los Angeles' ? 'la' : 'sf';
+                            //- console.log("setting map click", city)
+  //- console.log("switch city click", city)
+    switchCity(city);
+  });
+});
+
+// Check for city changes only when user drags the map
+map.on('dragend', () => {
+  const center = map.getCenter();
+  const closestCity = detectClosestCity(center.lng, center.lat);
+  if (closestCity !== currentCity) {
+    switchCity(closestCity);
+  }
+});
+
+// Mode configuration
+const modeConfigs = {
+  hot: {
+    left: { text: 'HOT', color: 'rgb(255, 0, 0)' },
+    right: { text: 'NOT', color: 'rgb(0, 0, 255)' },
+    getColor: (score) => {
+      // Convert 1-10 scale to 0-1
+      const t = (score - 1) / 9;
+      // Use 5.5 as the midpoint for white
+      if (score <= 5.5) {
+        return interpolateColor([0, 0, 255], [255, 255, 255], (score - 1) / 4.5);
+      } else {
+        return interpolateColor([255, 255, 255], [255, 0, 0], (score - 5.5) / 4.5);
+      }
+    },
+    getScore: (place) => place.attractive_score
+  },
+  age: {
+    left: { text: 'YOUNG', color: 'rgb(46, 204, 64)' },
+    right: { text: 'OLD', color: 'rgb(139, 69, 19)' },
+    getColor: (score) => {
+      if (score <= 5.5) {
+        return interpolateColor([139, 69, 19], [255, 255, 255], (score - 1) / 4.5);
+      } else {
+        return interpolateColor([255, 255, 255], [46, 204, 64], (score - 5.5) / 4.5);
+      }
+    },
+    getScore: (place) => place.age_score
+  },
+  gender: {
+    left: { text: 'MEN', color: 'rgb(100, 100, 255)' },
+    right: { text: 'WOMEN', color: 'rgb(255, 100, 150)' },
+    getColor: (score) => {
+      if (score <= 5.5) {
+        return interpolateColor([0, 0, 255], [255, 255, 255], (score - 1) / 4.5);
+      } else {
+        return interpolateColor([255, 255, 255], [255, 192, 203], (score - 5.5) / 4.5);
+      }
+    },
+    getScore: (place) => place.gender_score
+  }
+};
+
+let currentMode = 'hot';
+
+function interpolateColor(color1, color2, factor) {
+  const r = Math.round(color1[0] + factor * (color2[0] - color1[0]));
+  const g = Math.round(color1[1] + factor * (color2[1] - color1[1]));
+  const b = Math.round(color1[2] + factor * (color2[2] - color1[2]));
+  return `rgb(${r}, ${g}, ${b})`;
+}
+
+function updateLegend(mode) {
+  const config = modeConfigs[mode];
+  const legend = document.querySelector('.mode-legend');
+  const leftText = legend.querySelector('.legend-left');
+  const rightText = legend.querySelector('.legend-right');
+  const gradient = legend.querySelector('.legend-gradient');
+
+  leftText.textContent = config.left.text;
+  rightText.textContent = config.right.text;
+  gradient.style.background = `linear-gradient(to right, ${config.left.color}, white, ${config.right.color})`;
+}
+
+// Add click handlers for mode buttons
+document.querySelectorAll('.mode-button').forEach(button => {
+  button.addEventListener('click', () => {
+    const mode = button.dataset.mode;
+    currentMode = mode;
+    
+    // Update active button
+    document.querySelectorAll('.mode-button').forEach(btn => {
+      btn.classList.toggle('active', btn === button);
+    });
+    
+    // Update legend
+    updateLegend(mode);
+    
+    // Refresh markers with new colors
+    updateMarkers();
+    updateRankingsDisplay();
+  });
+});
+
+// Update getColorForScore function to use current mode
+function getColorForScore(place) {
+  const score = modeConfigs[currentMode].getScore(place);
+  const numScore = Math.max(1, Math.min(10, Number(score)));
+  return modeConfigs[currentMode].getColor(numScore);
+}
+
+// Initialize legend
+updateLegend('hot');
+
+// Add modal HTML to body
+const modalHtml = `
+  <div class="modal-backdrop"></div>
+  <div class="mobile-modal pix"></div>
+`;
+document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+const modal = document.querySelector('.mobile-modal');
+const backdrop = document.querySelector('.modal-backdrop');
+
+// Close modal when clicking backdrop
+backdrop.addEventListener('click', () => {
+  modal.style.display = 'none';
+  backdrop.style.display = 'none';
+});
+
+// Add these variables at the top with other global variables
+let lastMapMoveTime = 0;
+const CLICK_DELAY_THRESHOLD = 300; // milliseconds to wait after map movement
+
+// Add this listener to detect ALL map movements
+map.on('move', () => {
+  lastMapMoveTime = Date.now();
+});
+
+// Keep this as the single source of initial markers load
+map.on('load', updateMarkers);
+
+// Add these event listeners to update markers when the map moves
+map.on('moveend', updateMarkers);
+
+// Add this function to handle search
+async function handleSearch() {
+  const searchBox = document.getElementById('search-box');
+  const query = searchBox.value.trim().toLowerCase();
+  const resultsContainer = document.getElementById('results-table');
+  
+  if (!query) {
+    resultsContainer.innerHTML = '';
+    return;
+  }
+
+  // Get current city's data
+  const data = await loadCityData(currentCity);
+  if (!data || !data.features) return;
+
+  // Filter places that match the query
+  const matches = data.features
+    .map(feature => ({
+      ...feature.properties,
+      long: feature.geometry.coordinates[0],
+      lat: feature.geometry.coordinates[1]
+    }))
+    .filter(place => place.name.toLowerCase().includes(query))
+    .slice(0, 10); // Limit to 10 results
+
+  // Display results
+  if (matches.length > 0) {
+    resultsContainer.innerHTML = matches.map(place => `
+      <div style="cursor: pointer; padding: 3px; display: flex; align-items: center;" 
+           onclick="flyToLocation(${place.long}, ${place.lat}, ${JSON.stringify(place).replace(/"/g, '&quot;')})">
+        <img src="data:image/svg+xml;utf8,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="20" height="34.89" viewBox="0 0 20 34.89"><path d="m 817.11249,282.97118 c -1.25816,1.34277 -2.04623,3.29881 -2.01563,5.13867 0.0639,3.84476 1.79693,5.3002 4.56836,10.59179 0.99832,2.32851 2.04027,4.79237 3.03125,8.87305 0.13772,0.60193 0.27203,1.16104 0.33416,1.20948 0.0621,0.0485 0.19644,-0.51262 0.33416,-1.11455 0.99098,-4.08068 2.03293,-6.54258 3.03125,-8.87109 2.77143,-5.29159 4.50444,-6.74704 4.56836,-10.5918 0.0306,-1.83986 -0.75942,-3.79785 -2.01758,-5.14062 -1.43724,-1.53389 -3.60504,-2.66908 -5.91619,-2.71655 -2.31115,-0.0475 -4.4809,1.08773 -5.91814,2.62162 z" style="fill:${getColorForScore(place)};stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1" transform="translate(-814.59595,-274.38623)"/><circle r="3.0355" cy="13.86655" cx="8.43469" style="fill:#000000"/></svg>`)}" 
+           class="result-pin">
+        <div class="result-info" style="flex: 1;">
+          <span class="result-name">${place.name}</span>
+          <span class="result-hood" style="display: block; font-size: 12px; color: #666;">${place.hood || ''}</span>
+        </div>
+        <div class="result-score" style="margin-left: 8px;">
+          ${place.attractive_score}/10
+        </div>
+      </div>
+    `).join('');
+  } else {
+    resultsContainer.innerHTML = '<div style="text-align: center; padding: 10px;">No results found</div>';
+  }
+}
+
+// Update event listeners for search
+document.getElementById('search-button').addEventListener('click', handleSearch);
+
+document.getElementById('search-box').addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') {
+    handleSearch();
+  }
+});
+
+// Add this after other global variables
+const rankings = {"ny":{"hot":{"top":[{"age_score":"4.6","attractive_score":"10.0","category":"Georgian restaurant","gender_score":"6.3","lat":40.7548153,"long":-73.9688899,"faces":52,"name":"Ubani Midtown","hood":"Midtown East"},{"age_score":"9.9","attractive_score":"10.0","category":"Sushi restaurant","gender_score":"4.3","lat":40.7669821,"long":-73.9915781,"faces":50,"name":"Shinn WEST","hood":"Hell's Kitchen"},{"age_score":"6.5","attractive_score":"10.0","category":"Asian restaurant","gender_score":"7.2","lat":40.7256221,"long":-73.9952319,"faces":128,"name":"KYU NYC","hood":"NoHo"},{"age_score":"8.3","attractive_score":"10.0","category":"Thai restaurant","gender_score":"5.9","lat":40.7097945,"long":-74.0089157,"faces":172,"name":"Aroy Dee Thai Kitchen","hood":"Financial District"},{"age_score":"8.4","attractive_score":"10.0","category":"Thai restaurant","gender_score":"6.4","lat":40.7299486,"long":-74.0042366,"faces":188,"name":"Top Thai 55 Carmine","hood":"West Village"}],"bottom":[{"age_score":"3.3","attractive_score":"1.0","category":"Hamburger restaurant","gender_score":"5.6","lat":40.8208351,"long":-73.9363479,"faces":142,"name":"Jimbos Hamburger","hood":"Harlem"},{"age_score":"4.8","attractive_score":"1.0","category":"Chinese restaurant","gender_score":"3.1","lat":40.7532541,"long":-73.9739666,"faces":95,"name":"Hop Won Express","hood":"Midtown East"},{"age_score":"4.4","attractive_score":"1.0","category":"Puerto Rican restaurant","gender_score":"6.1","lat":40.7985866,"long":-73.9437731,"faces":59,"name":"Cocotazo","hood":"East Harlem"},{"age_score":"4.3","attractive_score":"1.0","category":"Bar & grill","gender_score":"4.5","lat":40.7518635,"long":-73.9739876,"faces":94,"name":"Malone's Irish Bar & Restaurant","hood":"Midtown East"},{"age_score":"5.3","attractive_score":"1.0","category":"Fine dining restaurant","gender_score":"3.4","lat":40.762163,"long":-73.97635609999999,"faces":145,"name":"Michael's New York","hood":"Midtown East"}]},"age":{"top":[{"age_score":"10.0","attractive_score":"9.9","category":"Korean restaurant","gender_score":"6.0","lat":40.7255039,"long":-73.99270179999999,"faces":193,"name":"C as in Charlie","hood":"NoHo"},{"age_score":"10.0","attractive_score":"7.4","category":"Thai restaurant","gender_score":"5.5","lat":40.7192335,"long":-73.9851697,"faces":151,"name":"Thailicious","hood":"Lower East Side"},{"age_score":"10.0","attractive_score":"8.3","category":"Korean restaurant","gender_score":"5.6","lat":40.7489391,"long":-73.9763062,"faces":187,"name":"KJUN","hood":"Murray Hill"},{"age_score":"10.0","attractive_score":"9.7","category":"Bar","gender_score":"5.3","lat":40.719592,"long":-73.9904612,"faces":198,"name":"Double Chicken Please","hood":"Lower East Side"},{"age_score":"10.0","attractive_score":"6.5","category":"Cocktail bar","gender_score":"4.8","lat":40.7255352,"long":-73.97824179999999,"faces":51,"name":"The Cabinet Mezcal Bar","hood":"East Village"}],"bottom":[{"age_score":"1.0","attractive_score":"3.7","category":"Restaurant","gender_score":"5.8","lat":40.7791703,"long":-73.9606294,"faces":50,"name":"Mykonian House","hood":"Upper East Side"},{"age_score":"1.0","attractive_score":"2.0","category":"Italian restaurant","gender_score":"4.7","lat":40.7589351,"long":-73.9608271,"faces":86,"name":"Morso","hood":"Midtown East"},{"age_score":"1.2","attractive_score":"1.0","category":"Irish pub","gender_score":"3.7","lat":40.7557453,"long":-73.9650154,"faces":113,"name":"Parnell's","hood":"Midtown East"},{"age_score":"1.3","attractive_score":"1.0","category":"French restaurant","gender_score":"5.4","lat":40.7742886,"long":-73.95092989999999,"faces":74,"name":"QUATORZE","hood":"Upper East Side"},{"age_score":"1.7","attractive_score":"3.0","category":"French restaurant","gender_score":"4.4","lat":40.7844792,"long":-73.9558481,"faces":77,"name":"Table d'Hôte","hood":"Upper East Side"}]},"gender":{"top":[{"age_score":"5.8","attractive_score":"8.2","category":"Brunch restaurant","gender_score":"9.2","lat":40.765084,"long":-73.9959959,"faces":122,"name":"Big Apple Brunch","hood":"Hell's Kitchen"},{"age_score":"5.3","attractive_score":"10.0","category":"Italian restaurant","gender_score":"8.6","lat":40.7210232,"long":-73.99473449999999,"faces":222,"name":"Pietro Nolita","hood":"Nolita"},{"age_score":"5.1","attractive_score":"7.9","category":"Restaurant","gender_score":"8.5","lat":40.8291516,"long":-73.9480913,"faces":109,"name":"Kanü Bar|Grill","hood":"Hamilton Heights"},{"age_score":"5.1","attractive_score":"10.0","category":"Steak house","gender_score":"8.2","lat":40.739794,"long":-74.00727499999999,"faces":156,"name":"STK Steakhouse Downtown NYC","hood":"West Village"},{"age_score":"4.9","attractive_score":"4.3","category":"Seafood restaurant","gender_score":"8.2","lat":40.7953538,"long":-73.9322852,"faces":174,"name":"Lighthouse Fish Market","hood":"East Harlem"}],"bottom":[{"age_score":"5.5","attractive_score":"8.2","category":"Pakistani restaurant","gender_score":"2.3","lat":40.7423362,"long":-73.9828643,"faces":118,"name":"Lahori Kabab","hood":"Kips Bay"},{"age_score":"5.5","attractive_score":"5.5","category":"Middle Eastern restaurant","gender_score":"2.5","lat":40.7311888,"long":-73.9829685,"faces":159,"name":"Big Arc Chicken","hood":"East Village"},{"age_score":"4.8","attractive_score":"1.0","category":"Chinese restaurant","gender_score":"3.1","lat":40.7532541,"long":-73.9739666,"faces":95,"name":"Hop Won Express","hood":"Midtown East"},{"age_score":"6.5","attractive_score":"5.8","category":"Sandwich shop","gender_score":"3.1","lat":40.767142,"long":-73.9940419,"faces":82,"name":"Subway","hood":"Hell's Kitchen"},{"age_score":"5.0","attractive_score":"4.3","category":"Italian restaurant","gender_score":"3.1","lat":40.7756346,"long":-73.95076499999999,"faces":70,"name":"Nica Trattoria","hood":"Upper East Side"}]}},"la":{"hot":{"top":[{"age_score":"7.0","attractive_score":"10.0","category":"Chinese restaurant","gender_score":"5.1","lat":34.0245853,"long":-118.2840294,"faces":57,"name":"Chinese Trendy Food 味府","hood":"University Park"},{"age_score":"2.6","attractive_score":"10.0","category":"Mexican restaurant","gender_score":"5.6","lat":34.0405917,"long":-118.2530734,"faces":72,"name":"Doña Inez Restaurant","hood":"Fashion District"},{"age_score":"6.3","attractive_score":"10.0","category":"Breakfast restaurant","gender_score":"4.8","lat":34.027816099999995,"long":-118.4775952,"faces":60,"name":"Uppers Cafe & Bakeshop","hood":"Mid-City"},{"age_score":"3.3","attractive_score":"10.0","category":"Seafood restaurant","gender_score":"6.5","lat":33.9676742,"long":-118.2042443,"faces":84,"name":"Mariscos El Levanton","hood":null},{"age_score":"4.0","attractive_score":"10.0","category":"Restaurant","gender_score":"7.5","lat":33.982890399999995,"long":-118.2499442,"faces":143,"name":"L.A. CRAZY CRAB","hood":"South Los Angeles"}],"bottom":[{"age_score":"1.5","attractive_score":"1.0","category":"Mexican restaurant","gender_score":"6.7","lat":33.8942985,"long":-118.0820851,"faces":66,"name":"Lupita's","hood":null},{"age_score":"1.9","attractive_score":"1.0","category":"Mediterranean restaurant","gender_score":"5.8","lat":33.9364565,"long":-118.1218524,"faces":50,"name":"Mediterranean Delight","hood":null},{"age_score":"1.2","attractive_score":"1.0","category":"Fast food restaurant","gender_score":"5.6","lat":33.9310173,"long":-118.113983,"faces":160,"name":"McDonald's","hood":null},{"age_score":"3.4","attractive_score":"1.0","category":"American restaurant","gender_score":"6.5","lat":33.9691779,"long":-118.3087856,"faces":195,"name":"The Best Burger","hood":"Manchester Square"},{"age_score":"3.1","attractive_score":"1.0","category":"Fast food restaurant","gender_score":"5.2","lat":33.9308137,"long":-118.1134343,"faces":150,"name":"Jack in the Box","hood":null}]},"age":{"top":[{"age_score":"9.4","attractive_score":"10.0","category":"Indian restaurant","gender_score":"3.9","lat":34.0288007,"long":-118.2917965,"faces":223,"name":"Manas Indian Cuisine","hood":"West Adams"},{"age_score":"8.9","attractive_score":"9.0","category":"Indian restaurant","gender_score":"4.9","lat":34.0200244,"long":-118.4041351,"faces":194,"name":"Mayura Indian Restaurant","hood":"Palms"},{"age_score":"8.9","attractive_score":"8.8","category":"Açaí shop","gender_score":"5.0","lat":34.0198405,"long":-118.4934039,"faces":77,"name":"Backyard Bowls","hood":"Mid-City"},{"age_score":"8.9","attractive_score":"7.6","category":"Health food restaurant","gender_score":"5.5","lat":33.9411354,"long":-118.4043581,"faces":87,"name":"Lemonade","hood":"Westchester"},{"age_score":"8.5","attractive_score":"7.5","category":"Japanese restaurant","gender_score":"6.1","lat":34.0243857,"long":-118.3934037,"faces":67,"name":"AFURI Ramen Culver City","hood":"Downtown"}],"bottom":[{"age_score":"1.0","attractive_score":"3.1","category":"Steak house","gender_score":"6.6","lat":33.9706857,"long":-118.0647382,"faces":171,"name":"Steak Corral Restaurants","hood":null},{"age_score":"1.0","attractive_score":"3.0","category":"Mexican restaurant","gender_score":"5.6","lat":33.9272736,"long":-118.0468802,"faces":102,"name":"El Sabroso grill","hood":null},{"age_score":"1.0","attractive_score":"1.8","category":"Diner","gender_score":"5.7","lat":33.917670699999995,"long":-118.0631601,"faces":181,"name":"Bruce's Prime Rib And Spirits","hood":null},{"age_score":"1.0","attractive_score":"1.0","category":"Southern restaurant (US)","gender_score":"5.9","lat":33.9158306,"long":-118.3271389,"faces":85,"name":"R&J Sea & Soul","hood":null},{"age_score":"1.0","attractive_score":"5.2","category":"Salvadoran restaurant","gender_score":"6.6","lat":33.9931918,"long":-118.2649684,"faces":68,"name":"Sylvia's Pupusería","hood":"South Los Angeles"}]},"gender":{"top":[{"age_score":"2.5","attractive_score":"10.0","category":"Mexican restaurant","gender_score":"8.5","lat":33.9276378,"long":-118.1301926,"faces":150,"name":"Le Coco","hood":null},{"age_score":"5.1","attractive_score":"4.5","category":"Restaurant","gender_score":"8.1","lat":34.015057899999995,"long":-118.3347378,"faces":198,"name":"The District by GS","hood":"South Los Angeles"},{"age_score":"4.5","attractive_score":"3.3","category":"Restaurant","gender_score":"7.8","lat":33.9767327,"long":-118.3763562,"faces":191,"name":"The Court Cafe","hood":"Westchester"},{"age_score":"5.4","attractive_score":"2.3","category":"Central American restaurant","gender_score":"7.5","lat":34.0170174,"long":-118.3087387,"faces":136,"name":"Tracey's","hood":"Exposition Park"},{"age_score":"3.7","attractive_score":"4.1","category":"Caribbean restaurant","gender_score":"7.5","lat":33.9047089,"long":-118.3261432,"faces":80,"name":"The Blue Hole Restaurant Belizean Caribbean Cuisine","hood":null}],"bottom":[{"age_score":"3.2","attractive_score":"3.3","category":"Hamburger restaurant","gender_score":"3.3","lat":34.0272222,"long":-118.4294444,"faces":175,"name":"Hamburger Habit","hood":"Rancho Park"},{"age_score":"3.4","attractive_score":"4.0","category":"Italian restaurant","gender_score":"3.4","lat":34.0080021,"long":-118.4912161,"faces":97,"name":"Capo","hood":null},{"age_score":"1.0","attractive_score":"2.1","category":"Restaurant","gender_score":"3.4","lat":34.0064241,"long":-118.4591831,"faces":56,"name":"The Penmar","hood":"Venice"},{"age_score":"5.2","attractive_score":"3.1","category":"Pizza restaurant","gender_score":"3.4","lat":34.0040629,"long":-118.4214637,"faces":61,"name":"Little Dynamite","hood":"Mar Vista"},{"age_score":"3.8","attractive_score":"5.4","category":"Asian fusion restaurant","gender_score":"3.4","lat":34.0198265,"long":-118.2398503,"faces":53,"name":"WaBa Grill","hood":"Central-Alameda"}]}},"sf":{"hot":{"top":[{"age_score":"7.3","attractive_score":"10.0","category":"Mediterranean restaurant","gender_score":"3.5","lat":37.785651,"long":-122.4150114,"faces":68,"name":"Ararat Kebab & Gyros","hood":"Tenderloin"},{"age_score":"8.6","attractive_score":"10.0","category":"Indian restaurant","gender_score":"4.3","lat":37.789921,"long":-122.420448,"faces":179,"name":"Himalayan Cuisine SF","hood":"Polk Gulch"},{"age_score":"7.7","attractive_score":"10.0","category":"Thai restaurant","gender_score":"5.0","lat":37.7807066,"long":-122.4646478,"faces":56,"name":"MuuKaTa6395","hood":"Richmond District"},{"age_score":"6.5","attractive_score":"10.0","category":"Chinese restaurant","gender_score":"6.7","lat":37.7954547,"long":-122.4051554,"faces":69,"name":"Hotpot Champ","hood":"Chinatown"},{"age_score":"8.5","attractive_score":"10.0","category":"Hot pot restaurant","gender_score":"5.2","lat":37.7983486,"long":-122.4044549,"faces":76,"name":"Fondue Chinoise","hood":"North Beach"}],"bottom":[{"age_score":"2.7","attractive_score":"1.0","category":"Pizza restaurant","gender_score":"5.2","lat":37.7378902,"long":-122.3898484,"faces":65,"name":"Pizza Zone N Grill","hood":"Bayview"},{"age_score":"3.4","attractive_score":"1.0","category":"Mandarin restaurant","gender_score":"4.3","lat":37.741534,"long":-122.422811,"faces":53,"name":"Mandarin House SF","hood":"Bernal Heights"},{"age_score":"2.7","attractive_score":"1.0","category":"Peruvian restaurant","gender_score":"3.7","lat":37.7972243,"long":-122.395391,"faces":64,"name":"Pier42","hood":"Northern Waterfront"},{"age_score":"2.9","attractive_score":"1.0","category":"Mexican restaurant","gender_score":"4.3","lat":37.725966,"long":-122.3898467,"faces":51,"name":"Asados el primo","hood":"Bayview"},{"age_score":"4.5","attractive_score":"1.0","category":"Seafood restaurant","gender_score":"5.7","lat":37.7181095,"long":-122.3876014,"faces":66,"name":"Two Jack's Seafood","hood":"Bret Harte"}]},"age":{"top":[{"age_score":"10.0","attractive_score":"9.5","category":"Dessert restaurant","gender_score":"4.6","lat":37.7772013,"long":-122.4250075,"faces":193,"name":"Na Ya Dessert Cafe","hood":"Hayes Valley"},{"age_score":"10.0","attractive_score":"9.9","category":"Vietnamese restaurant","gender_score":"4.2","lat":37.7744144,"long":-122.4375271,"faces":91,"name":"Banh Mi Viet","hood":"Alamo Square"},{"age_score":"10.0","attractive_score":"6.7","category":"Udon noodle restaurant","gender_score":"4.4","lat":37.7747887,"long":-122.4379985,"faces":72,"name":"Katsuo & Kombu","hood":"Panhandle"},{"age_score":"10.0","attractive_score":"8.5","category":"Modern Indian restaurant","gender_score":"5.7","lat":37.7995525,"long":-122.4411955,"faces":94,"name":"Tiya","hood":"Marina District"},{"age_score":"10.0","attractive_score":"8.5","category":"Indian restaurant","gender_score":"5.2","lat":37.7635729,"long":-122.42004,"faces":171,"name":"Aaha Indian Cuisine","hood":"Mission District"}],"bottom":[{"age_score":"1.0","attractive_score":"2.1","category":"American restaurant","gender_score":"5.5","lat":37.7246962,"long":-122.493753,"faces":68,"name":"Cypress Grill","hood":"Lakeshore"},{"age_score":"1.0","attractive_score":"1.8","category":"Seafood restaurant","gender_score":"3.8","lat":37.8083335,"long":-122.4159543,"faces":127,"name":"Guardino's","hood":"Fisherman's Wharf"},{"age_score":"1.2","attractive_score":"4.2","category":"Sandwich shop","gender_score":"4.5","lat":37.76645,"long":-122.40815,"faces":70,"name":"TOGO'S Sandwiches","hood":"Mission District"},{"age_score":"1.2","attractive_score":"4.5","category":"Traditional American restaurant","gender_score":"2.8","lat":37.725809,"long":-122.3868195,"faces":54,"name":"City Lunch Restaurant","hood":"Hunters Point"},{"age_score":"1.4","attractive_score":"1.0","category":"Restaurant","gender_score":"3.9","lat":37.7906608,"long":-122.4599162,"faces":55,"name":"Ironwoods","hood":"Presidio"}]},"gender":{"top":[{"age_score":"7.0","attractive_score":"3.9","category":"Restaurant","gender_score":"7.6","lat":37.7656245,"long":-122.4134032,"faces":98,"name":"Jolene’s Bar and Restaurant","hood":"Mission District"},{"age_score":"8.0","attractive_score":"7.5","category":"Vegan restaurant","gender_score":"7.2","lat":37.7780873,"long":-122.4226796,"faces":97,"name":"Om Sabor","hood":"Fillmore District"},{"age_score":"5.7","attractive_score":"8.8","category":"New American restaurant","gender_score":"7.1","lat":37.783294,"long":-122.4190681,"faces":240,"name":"Son and Garden","hood":"Tenderloin"},{"age_score":"8.2","attractive_score":"5.7","category":"Restaurant","gender_score":"6.8","lat":37.7427675,"long":-122.4787423,"faces":79,"name":"STIX","hood":"Sunset District"},{"age_score":"4.1","attractive_score":"2.2","category":"Cafe","gender_score":"6.8","lat":37.7633464,"long":-122.4573282,"faces":52,"name":"Moffitt Cafe, UCSF Medical","hood":"Parnassus Heights"}],"bottom":[{"age_score":"6.3","attractive_score":"4.8","category":"Adult entertainment club","gender_score":"2.5","lat":37.7859444,"long":-122.3996934,"faces":56,"name":"Gold Club","hood":"SoMa"},{"age_score":"7.0","attractive_score":"4.3","category":"Gay bar","gender_score":"2.5","lat":37.7649717,"long":-122.4318017,"faces":277,"name":"Hi Tops San Francisco","hood":"The Castro"},{"age_score":"5.4","attractive_score":"4.6","category":"Gay bar","gender_score":"2.7","lat":37.764394,"long":-122.433329,"faces":237,"name":"Lookout","hood":"Duboce Triangle"},{"age_score":"6.8","attractive_score":"3.6","category":"Mediterranean restaurant","gender_score":"2.8","lat":37.7893381,"long":-122.3972539,"faces":90,"name":"Oasis Grill","hood":"SoMa"},{"age_score":"1.2","attractive_score":"4.5","category":"Traditional American restaurant","gender_score":"2.8","lat":37.725809,"long":-122.3868195,"faces":54,"name":"City Lunch Restaurant","hood":"Hunters Point"}]}}};  // This will contain the precomputed rankings
+
+// Add this function to update rankings display
+function updateRankingsDisplay() {
+  const cityRanking = rankings[currentCity];
+  const modeRanking = cityRanking[currentMode];
+  const container = document.getElementById('rankings-content');
+  
+  let titlePairs;
+  if (currentMode === 'hot') {
+    titlePairs = ['hot', 'not'];
+  } else if (currentMode === 'age') {
+    titlePairs = ['young', 'old'];
+  } else {
+    titlePairs = ['female', 'male'];
+  }
+  
+  container.innerHTML = `
+    <div style="margin-bottom: 20px;">
+      <h4 style="margin-bottom: 8px;">Top 5 ${titlePairs[0]}</h4>
+      <div class="results-group">
+        ${modeRanking.top.map(place => `
+          <div style="cursor: pointer; padding: 3px; display: flex; align-items: center;" 
+               onclick="flyToLocation(${place.long}, ${place.lat}, ${JSON.stringify(place).replace(/"/g, '&quot;')})">
+            <img src="data:image/svg+xml;utf8,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="20" height="34.89" viewBox="0 0 20 34.89"><path d="m 817.11249,282.97118 c -1.25816,1.34277 -2.04623,3.29881 -2.01563,5.13867 0.0639,3.84476 1.79693,5.3002 4.56836,10.59179 0.99832,2.32851 2.04027,4.79237 3.03125,8.87305 0.13772,0.60193 0.27203,1.16104 0.33416,1.20948 0.0621,0.0485 0.19644,-0.51262 0.33416,-1.11455 0.99098,-4.08068 2.03293,-6.54258 3.03125,-8.87109 2.77143,-5.29159 4.50444,-6.74704 4.56836,-10.5918 0.0306,-1.83986 -0.75942,-3.79785 -2.01758,-5.14062 -1.43724,-1.53389 -3.60504,-2.66908 -5.91619,-2.71655 -2.31115,-0.0475 -4.4809,1.08773 -5.91814,2.62162 z" style="fill:${getColorForScore(place)};stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1" transform="translate(-814.59595,-274.38623)"/><circle r="3.0355" cy="13.86655" cx="8.43469" style="fill:#000000"/></svg>`)}" 
+                 class="result-pin">
+            <div class="result-info" style="flex: 1;">
+              <span class="result-name">${place.name}</span>
+              <span class="result-hood" style="display: block; font-size: 12px; color: #666;">${place.hood || ''}</span>
+            </div>
+            <div class="result-score" style="margin-left: 8px;">
+              ${place[currentMode === 'hot' ? 'attractive_score' : currentMode === 'age' ? 'age_score' : 'gender_score']}/10
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+    <div>
+      <h4 style="margin-bottom: 8px;">Top 5 ${titlePairs[1]}</h4>
+      <div class="results-group">
+        ${modeRanking.bottom.map(place => `
+          <div style="cursor: pointer; padding: 3px; display: flex; align-items: center;"
+               onclick="flyToLocation(${place.long}, ${place.lat}, ${JSON.stringify(place).replace(/"/g, '&quot;')})">
+            <img src="data:image/svg+xml;utf8,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="20" height="34.89" viewBox="0 0 20 34.89"><path d="m 817.11249,282.97118 c -1.25816,1.34277 -2.04623,3.29881 -2.01563,5.13867 0.0639,3.84476 1.79693,5.3002 4.56836,10.59179 0.99832,2.32851 2.04027,4.79237 3.03125,8.87305 0.13772,0.60193 0.27203,1.16104 0.33416,1.20948 0.0621,0.0485 0.19644,-0.51262 0.33416,-1.11455 0.99098,-4.08068 2.03293,-6.54258 3.03125,-8.87109 2.77143,-5.29159 4.50444,-6.74704 4.56836,-10.5918 0.0306,-1.83986 -0.75942,-3.79785 -2.01758,-5.14062 -1.43724,-1.53389 -3.60504,-2.66908 -5.91619,-2.71655 -2.31115,-0.0475 -4.4809,1.08773 -5.91814,2.62162 z" style="fill:${getColorForScore(place)};stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1" transform="translate(-814.59595,-274.38623)"/><circle r="3.0355" cy="13.86655" cx="8.43469" style="fill:#000000"/></svg>`)}" 
+                 class="result-pin">
+            <div class="result-info" style="flex: 1;">
+              <span class="result-name">${place.name}</span>
+              <span class="result-hood" style="display: block; font-size: 12px; color: #666;">${place.hood || ''}</span>
+            </div>
+            <div class="result-score" style="margin-left: 8px;">
+              ${place[currentMode === 'hot' ? 'attractive_score' : currentMode === 'age' ? 'age_score' : 'gender_score']}/10
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+// Add this after other global variables
+let currentPopup = null;
+
+// Update flyToLocation function to manage popups
+function flyToLocation(lng, lat, place) {
+  // Close any existing popup
+  if (currentPopup) {
+    currentPopup.remove();
+    currentPopup = null;
+  }
+
+  map.flyTo({
+    center: [lng, lat],
+    zoom: 16,
+    duration: 1000
+  });
+
+  // Wait for the fly animation to complete before showing popup
+  setTimeout(() => {
+    const isMobile = window.innerWidth <= 768;
+    const popupContent = createPopupContent(place);
+
+    if (isMobile) {
+      modal.innerHTML = popupContent;
+      modal.style.display = 'block';
+      backdrop.style.display = 'block';
+    } else {
+      currentPopup = new mapboxgl.Popup({ offset: 25 })
+        .setLngLat([lng, lat])
+        .setHTML(popupContent)
+        .addTo(map);
+    }
+  }, 1000);
+}
+
+// Pan control handlers
+document.querySelector('.pan-north').addEventListener('click', () => {
+  const center = map.getCenter();
+  map.panTo([center.lng, center.lat + 0.01]);
+});
+
+document.querySelector('.pan-south').addEventListener('click', () => {
+  const center = map.getCenter();
+  map.panTo([center.lng, center.lat - 0.01]);
+});
+
+document.querySelector('.pan-east').addEventListener('click', () => {
+  const center = map.getCenter();
+  map.panTo([center.lng + 0.01, center.lat]);
+});
+
+document.querySelector('.pan-west').addEventListener('click', () => {
+  const center = map.getCenter();
+  map.panTo([center.lng - 0.01, center.lat]);
+});
+
+document.querySelector('.pan-center').addEventListener('click', () => {
+  map.flyTo({
+    center: cityConfigs[currentCity].center,
+    zoom: cityConfigs[currentCity].zoom
+  });
+});
+
+// Zoom control handlers
+document.querySelector('.zoom-plus').addEventListener('click', () => {
+  map.zoomIn();
+});
+
+document.querySelector('.zoom-minus').addEventListener('click', () => {
+  map.zoomOut();
+});
+
+// Slider functionality
+const slider = document.querySelector('.slider-handle');
+let isDragging = false;
+let startY;
+let startTop;
+
+slider.addEventListener('mousedown', (e) => {
+  isDragging = true;
+  startY = e.clientY;
+  startTop = parseInt(slider.style.top || '153');
+  slider.style.cursor = 'grabbing';
+});
+
+document.addEventListener('mousemove', (e) => {
+  if (!isDragging) return;
+  
+  const deltaY = e.clientY - startY;
+  const newTop = Math.max(0, Math.min(153, startTop + deltaY));
+  slider.style.top = newTop + 'px';
+  
+  // Map slider position to zoom level (0px = zoom 18, 153px = zoom 0)
+  const zoomLevel = 18 - ((newTop / 153) * 18);
+  map.setZoom(zoomLevel);
+});
+
+document.addEventListener('mouseup', () => {
+  isDragging = false;
+  slider.style.cursor = 'grab';
+});
+
+// Update slider position when zoom changes
+map.on('zoom', () => {
+  const zoom = map.getZoom();
+  // Map zoom level to slider position (zoom 18 = 0px, zoom 0 = 153px)
+  const topPosition = ((18 - zoom) / 18) * 153;
+  slider.style.top = topPosition + 'px';
+});</script>
+  <div class="modal-backdrop"></div>
+  <div class="mobile-modal pix"></div>
+</body></html>
