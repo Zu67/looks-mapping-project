@@ -1,12 +1,12 @@
 # LooksMapping Scraper
 
-A comprehensive web scraping toolkit for extracting restaurant data from LooksMapping.com, focusing on Manhattan restaurants with demographic and attractiveness metrics.
+A comprehensive web scraping toolkit for extracting restaurant data from LooksMapping.com, focusing on Manhattan restaurants with demographic metrics.
 
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-## 🚀 Features
+## Features
 
 - **Multiple Scraping Methods**: HTTP requests, Selenium WebDriver, and Playwright automation
 - **Comprehensive Data Extraction**: Restaurant names, neighborhoods, attractiveness scores, age demographics, gender ratios
@@ -16,13 +16,13 @@ A comprehensive web scraping toolkit for extracting restaurant data from LooksMa
 - **Type Safety**: Full type hints with mypy strict mode
 - **Testing**: Comprehensive test coverage with pytest
 
-## 📋 Requirements
+## Requirements
 
 - Python 3.8 or higher
 - Chrome browser (for Selenium and Playwright scrapers)
 - Internet connection
 
-## 🛠️ Installation
+## Installation
 
 ### 1. Clone the Repository
 
@@ -57,7 +57,7 @@ playwright install
 # Chrome driver is automatically managed by webdriver-manager
 ```
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Basic Scraping
 
@@ -250,7 +250,7 @@ LooksMappingScraper/
    - Advanced browser automation
    - Map interaction and popup handling
 
-## 🚨 Troubleshooting
+## Troubleshooting
 
 ### Common Issues
 
@@ -283,7 +283,7 @@ Enable debug mode for detailed logging:
 python scripts/scrape.py --method selenium --verbose
 ```
 
-## 🤝 Contributing
+## Contributing
 
 1. Fork the repository
 2. Create a feature branch: `git checkout -b feature-name`
@@ -304,23 +304,14 @@ make dev-setup
 make ci
 ```
 
-## 📝 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## ⚖️ Legal Notice
+## Legal Notice
 
 This project is for educational and research purposes. Please respect the website's terms of service and robots.txt file. Use reasonable delays between requests to avoid overloading the server.
 
-## 🆘 Support
 
-For issues and questions:
 
-1. Check the [troubleshooting section](#-troubleshooting)
-2. Review the [documentation](docs/)
-3. Open an [issue](https://github.com/yourusername/looksmapping-scraper/issues)
-
-## 📊 Changelog
+## Changelog
 
 - **v0.1.0** (2023-12-03): Initial release
   - HTTP, Selenium, and Playwright scrapers
