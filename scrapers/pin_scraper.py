@@ -199,7 +199,7 @@ async def scrape_looksmapping():
                                 
                                 # Save progress after every 10 new restaurants
                                 if len(all_restaurants) % 10 == 0:
-                                    with open("restaurant_data_progress.json", "w") as f:
+                                    with open("data/restaurant_data_progress.json", "w") as f:
                                         json.dump(all_restaurants, f, indent=2)
                                     print(f"Progress saved: {len(all_restaurants)} restaurants")
                         except Exception as e:
@@ -207,7 +207,7 @@ async def scrape_looksmapping():
                             continue
                     
                     # Save progress after each batch
-                    with open("restaurant_data_progress.json", "w") as f:
+                    with open("data/restaurant_data_progress.json", "w") as f:
                         json.dump(all_restaurants, f, indent=2)
                     print(f"Batch complete. Total restaurants so far: {len(all_restaurants)}")
                 
@@ -218,10 +218,10 @@ async def scrape_looksmapping():
         
         # Save the final data
         if all_restaurants:
-            with open("restaurant_data.json", "w") as f:
+            with open("data/restaurant_data.json", "w") as f:
                 json.dump(all_restaurants, f, indent=2)
             
-            print(f"\nSaved {len(all_restaurants)} restaurants to restaurant_data.json")
+            print(f"\nSaved {len(all_restaurants)} restaurants to data/restaurant_data.json")
             
             # Group restaurants by neighborhood
             by_hood = defaultdict(list)

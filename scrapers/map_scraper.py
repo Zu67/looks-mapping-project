@@ -30,7 +30,7 @@ async def scrape_looksmapping():
         
         # Take a screenshot of the initial page
         print("Taking initial screenshot...")
-        await page.screenshot(path="looksmapping_initial.png")
+        await page.screenshot(path="data/looksmapping_initial.png")
         
         # Try to find and click on New York
         print("Looking for New York button...")
@@ -58,7 +58,7 @@ async def scrape_looksmapping():
             print(f"Error selecting New York: {e}")
         
         # Take another screenshot after selecting New York
-        await page.screenshot(path="looksmapping_ny_selected.png")
+        await page.screenshot(path="data/looksmapping_ny_selected.png")
         
         # Wait for the map to load
         print("Waiting for map to load...")
@@ -166,7 +166,7 @@ async def scrape_looksmapping():
             content = await page.content()
             
             # Save the page source for inspection
-            with open("looksmapping_source.html", "w", encoding="utf-8") as f:
+            with open("data/looksmapping_source.html", "w", encoding="utf-8") as f:
                 f.write(content)
             
             # Look for restaurant data in the JavaScript
@@ -194,10 +194,10 @@ async def scrape_looksmapping():
         
         # Save the data
         if all_restaurants:
-            with open("restaurant_data.json", "w") as f:
+            with open("data/restaurant_data.json", "w") as f:
                 json.dump(all_restaurants, f, indent=2)
             
-            print(f"Saved {len(all_restaurants)} restaurants to restaurant_data.json")
+            print(f"Saved {len(all_restaurants)} restaurants to data/restaurant_data.json")
             
             # Group restaurants by neighborhood
             by_hood = defaultdict(list)
@@ -229,7 +229,7 @@ async def scrape_looksmapping():
                     "age_score": "8.3"
                 }
             ]
-            with open("restaurant_data.json", "w") as f:
+            with open("data/restaurant_data.json", "w") as f:
                 json.dump(test_data, f, indent=2)
             print("Created test dataset with 2 restaurants")
         

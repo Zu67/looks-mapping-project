@@ -152,13 +152,13 @@ def scrape_looksmapping():
                 print(f"Error processing {mode} mode: {e}")
         
         # Save the data
-        with open("restaurant_data.json", "w") as f:
+        with open("data/restaurant_data.json", "w") as f:
             json.dump(all_restaurants, f, indent=2)
         
-        print(f"Saved {len(all_restaurants)} restaurants to restaurant_data.json")
+        print(f"Saved {len(all_restaurants)} restaurants to data/restaurant_data.json")
         
         # Save the page source for reference
-        with open("looksmapping_complete.html", "w", encoding="utf-8") as f:
+        with open("data/looksmapping_complete.html", "w", encoding="utf-8") as f:
             f.write(driver.page_source)
         
         return all_restaurants

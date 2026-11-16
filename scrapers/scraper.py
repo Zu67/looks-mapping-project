@@ -191,10 +191,10 @@ def _save_and_analyze_results(restaurant_data: List[Dict[str, Any]]) -> None:
         return
     
     # Save the data to JSON file
-    with open("restaurant_data.json", "w", encoding="utf-8") as f:
+    with open("data/restaurant_data.json", "w", encoding="utf-8") as f:
         json.dump(restaurant_data, f, indent=2, ensure_ascii=False)
     
-    logger.info(f"Saved {len(restaurant_data)} restaurants to restaurant_data.json")
+    logger.info(f"Saved {len(restaurant_data)} restaurants to data/restaurant_data.json")
     
     # Group by neighborhood and display results
     by_hood = defaultdict(list)

@@ -157,7 +157,7 @@ def extract_from_rankings_object(html_content):
 def main():
     # Read the HTML file
     try:
-        with open('looksmapping.html', 'r', encoding='utf-8') as f:
+        with open('data/LooksMapping.html', 'r', encoding='utf-8') as f:
             html_content = f.read()
         
         print(f"Successfully read HTML file, length: {len(html_content)}")
@@ -193,10 +193,10 @@ def main():
         
         if restaurant_data:
             # Save to a JSON file
-            with open('restaurant_data.json', 'w') as f:
+            with open('data/restaurant_data.json', 'w') as f:
                 json.dump(restaurant_data, f, indent=2)
             
-            print("Data saved to restaurant_data.json")
+            print("Data saved to data/restaurant_data.json")
             
             # Group restaurants by neighborhood
             by_hood = defaultdict(list)
@@ -232,7 +232,7 @@ def main():
                     "lat": 67.9
                 }
             ]
-            with open('restaurant_data.json', 'w') as f:
+            with open('data/restaurant_data.json', 'w') as f:
                 json.dump(test_data, f, indent=2)
             print("Created test dataset with 2 restaurants")
             

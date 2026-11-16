@@ -17,21 +17,30 @@ This project provides multiple scraping approaches to extract restaurant data fr
 ## Project Structure
 
 ```
-├── README.md                          # This file
-├── requirements.txt                   # Python dependencies
-├── basic_scraper.py                   # Simple HTTP-based scraper
-├── comprehensive_map_scraper.py        # Advanced Playwright-based scraper
-├── selenium_scraper.py                # Selenium WebDriver scraper
-├── selenium_scraper_robust.py         # Enhanced Selenium scraper
-├── simple_scraper.py                  # Minimal scraper implementation
-├── playwright_scraper.py              # Playwright automation scraper
-├── requests_html_scraper.py           # Requests-HTML based scraper
-├── neighborhood_analyzer.py           # Data analysis and statistics
-├── extract_data.py                    # Data extraction utilities
-├── map_scraper.py                     # Map-specific scraping logic
-├── pin_scraper.py                     # Pin-based data extraction
-├── scraper.py                         # Main scraper interface
-└── restaurant_data.json               # Output data file
+├── README.md
+├── requirements.txt
+├── scrapers/
+│   ├── basic_scraper.py
+│   ├── comprehensive_map_scraper.py
+│   ├── extract_data.py
+│   ├── map_scraper.py
+│   ├── neighborhood_analyzer.py
+│   ├── pin_scraper.py
+│   ├── playwright_scraper.py
+│   ├── requests_html_scraper.py
+│   ├── scraper.py
+│   ├── selenium_scraper.py
+│   ├── selenium_scraper_robust.py
+│   └── simple_scraper.py
+└── data/
+    ├── LooksMapping.html
+    ├── looksmapping_complete.html
+    ├── looksmapping_initial.png
+    ├── looksmapping_ny_selected.png
+    ├── looksmapping_source.html
+    ├── rankings_data.json
+    ├── raw_looksmapping.html
+    └── restaurant_data.json
 ```
 
 ## Installation
@@ -78,20 +87,20 @@ This project provides multiple scraping approaches to extract restaurant data fr
 The simplest way to start scraping:
 
 ```bash
-python basic_scraper.py
+python scrapers/basic_scraper.py
 ```
 
 This will:
 - Fetch the LooksMapping website
 - Extract restaurant data from JavaScript objects
-- Save results to `restaurant_data.json`
+- Save results to `data/restaurant_data.json`
 
 ### Advanced Scraping with Playwright
 
 For comprehensive data extraction with browser automation:
 
 ```bash
-python comprehensive_map_scraper.py
+python scrapers/comprehensive_map_scraper.py
 ```
 
 This will:
@@ -105,7 +114,7 @@ This will:
 For traditional browser automation:
 
 ```bash
-python selenium_scraper.py
+python scrapers/selenium_scraper.py
 ```
 
 ### Data Analysis
@@ -113,26 +122,26 @@ python selenium_scraper.py
 After scraping, analyze the collected data:
 
 ```bash
-python neighborhood_analyzer.py
+python scrapers/neighborhood_analyzer.py
 ```
 
 This will provide statistical analysis of Manhattan neighborhoods.
 
 ## Scraping Methods
 
-### 1. Basic HTTP Scraper (`basic_scraper.py`)
+### 1. Basic HTTP Scraper (`scrapers/basic_scraper.py`)
 - **Method**: HTTP requests with BeautifulSoup parsing
 - **Pros**: Fast, lightweight, no browser required
 - **Cons**: Limited to static content, may miss dynamic data
 - **Use Case**: Quick data extraction when JavaScript execution isn't needed
 
-### 2. Playwright Scraper (`comprehensive_map_scraper.py`)
+### 2. Playwright Scraper (`scrapers/comprehensive_map_scraper.py`)
 - **Method**: Full browser automation with Playwright
 - **Pros**: Handles dynamic content, can interact with complex interfaces
 - **Cons**: Slower, requires browser installation
 - **Use Case**: Comprehensive data extraction with map interaction
 
-### 3. Selenium Scraper (`selenium_scraper.py`)
+### 3. Selenium Scraper (`scrapers/selenium_scraper.py`)
 - **Method**: WebDriver automation with Selenium
 - **Pros**: Mature ecosystem, good debugging tools
 - **Cons**: Requires driver management, slower than Playwright
@@ -140,7 +149,7 @@ This will provide statistical analysis of Manhattan neighborhoods.
 
 ## Data Structure
 
-The scraped data is saved in `restaurant_data.json` with the following structure:
+The scraped data is saved in `data/restaurant_data.json` with the following structure:
 
 ```json
 [
@@ -178,10 +187,10 @@ The scraped data is saved in `restaurant_data.json` with the following structure
 For headless operation, modify the browser launch options:
 
 ```python
-# In comprehensive_map_scraper.py
+# In scrapers/comprehensive_map_scraper.py
 browser = await p.chromium.launch(headless=True)  # Set to True for headless
 
-# In selenium_scraper.py
+# In scrapers/selenium_scraper.py
 chrome_options.add_argument("--headless")  # Uncomment for headless
 ```
 
@@ -225,7 +234,7 @@ browser = await p.chromium.launch(headless=False)
 
 ## Data Analysis
 
-The `neighborhood_analyzer.py` script provides statistical analysis:
+The `scrapers/neighborhood_analyzer.py` script provides statistical analysis:
 
 - **Attractiveness Rankings**: Neighborhoods ranked by average attractiveness
 - **Age Demographics**: Areas with younger vs. older demographics  
@@ -254,9 +263,6 @@ For issues and questions:
 2. Review the code comments
 3. Open an issue on GitHub
 
-## Changelog
+## History
 
-- **v1.0**: Initial release with basic scraping functionality
-- **v1.1**: Added Playwright-based comprehensive scraper
-- **v1.2**: Enhanced error handling and data analysis
-- **v1.3**: Added neighborhood analysis and statistical reporting
+Zu67 committed the scrapers on 2025-10-25 ("Initial commit: LooksMapping scraper project") and the documentation the same day ("feat: Add comprehensive documentation and clean up codebase").

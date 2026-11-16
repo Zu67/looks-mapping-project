@@ -59,10 +59,10 @@ def scrape_with_requests_html():
     print(f"Successfully extracted data for {len(restaurants)} restaurants")
     
     # Save the data
-    with open("restaurant_data.json", "w") as f:
+    with open("data/restaurant_data.json", "w") as f:
         json.dump(restaurants, f, indent=2)
     
-    print("Data saved to restaurant_data.json")
+    print("Data saved to data/restaurant_data.json")
     
     # Group restaurants by neighborhood
     by_hood = defaultdict(list)
@@ -75,10 +75,10 @@ def scrape_with_requests_html():
         print(f"  {hood}: {len(places)} restaurants")
     
     # Also save the full HTML for reference
-    with open("looksmapping_complete.html", "w", encoding="utf-8") as f:
+    with open("data/looksmapping_complete.html", "w", encoding="utf-8") as f:
         f.write(r.html.html)
     
-    print("Complete HTML saved to looksmapping_complete.html")
+    print("Complete HTML saved to data/looksmapping_complete.html")
 
 if __name__ == "__main__":
     scrape_with_requests_html() 

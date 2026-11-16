@@ -49,7 +49,7 @@ def scrape_looksmapping() -> List[Dict[str, Any]]:
     print(f"Successfully fetched website, content length: {len(html_content)}")
     
     # Save the raw HTML for inspection and debugging
-    with open("raw_looksmapping.html", "w", encoding="utf-8") as f:
+    with open("data/raw_looksmapping.html", "w", encoding="utf-8") as f:
         f.write(html_content)
     
     restaurants = _extract_restaurants_from_js(html_content)
@@ -196,10 +196,10 @@ def _save_restaurant_data(restaurants: List[Dict[str, Any]]) -> None:
     Args:
         restaurants: List of restaurant dictionaries to save
     """
-    with open("restaurant_data.json", "w", encoding="utf-8") as f:
+    with open("data/restaurant_data.json", "w", encoding="utf-8") as f:
         json.dump(restaurants, f, indent=2, ensure_ascii=False)
     
-    print(f"Saved {len(restaurants)} restaurants to restaurant_data.json")
+    print(f"Saved {len(restaurants)} restaurants to data/restaurant_data.json")
 
 
 if __name__ == "__main__":

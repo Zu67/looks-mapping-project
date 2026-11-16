@@ -20,7 +20,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
 
 
-def analyze_manhattan_neighborhoods(data_file: str = 'restaurant_data.json') -> pd.DataFrame:
+def analyze_manhattan_neighborhoods(data_file: str = 'data/restaurant_data.json') -> pd.DataFrame:
     """
     Analyze Manhattan neighborhoods based on restaurant data.
     
@@ -270,7 +270,7 @@ def extract_restaurant_data() -> List[Dict[str, Any]]:
     restaurants = []
     
     # Save to a JSON file for later use
-    with open('restaurant_data.json', 'w', encoding='utf-8') as f:
+    with open('data/restaurant_data.json', 'w', encoding='utf-8') as f:
         json.dump(restaurants, f, indent=2, ensure_ascii=False)
     
     logger.info("Restaurant data extraction completed")

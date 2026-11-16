@@ -177,10 +177,10 @@ def _save_and_analyze_results(restaurants: List[Dict[str, Any]], html_content: s
         html_content: Raw HTML content to save
     """
     # Save the data to JSON file
-    with open("restaurant_data.json", "w", encoding="utf-8") as f:
+    with open("data/restaurant_data.json", "w", encoding="utf-8") as f:
         json.dump(restaurants, f, indent=2, ensure_ascii=False)
     
-    logger.info("Data saved to restaurant_data.json")
+    logger.info("Data saved to data/restaurant_data.json")
     
     # Group restaurants by neighborhood
     by_hood = defaultdict(list)
@@ -193,10 +193,10 @@ def _save_and_analyze_results(restaurants: List[Dict[str, Any]], html_content: s
         logger.info(f"  {hood}: {len(places)} restaurants")
     
     # Save the HTML for reference
-    with open("looksmapping.html", "w", encoding="utf-8") as f:
+    with open("data/looksmapping.html", "w", encoding="utf-8") as f:
         f.write(html_content)
     
-    logger.info("HTML saved to looksmapping.html")
+    logger.info("HTML saved to data/looksmapping.html")
 
 
 if __name__ == "__main__":

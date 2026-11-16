@@ -322,10 +322,10 @@ def _save_and_analyze_results(restaurants: List[Dict[str, Any]], driver: webdriv
         driver: Chrome WebDriver instance
     """
     # Save the data to JSON file
-    with open("restaurant_data.json", "w", encoding="utf-8") as f:
+    with open("data/restaurant_data.json", "w", encoding="utf-8") as f:
         json.dump(restaurants, f, indent=2, ensure_ascii=False)
     
-    logger.info("Data saved to restaurant_data.json")
+    logger.info("Data saved to data/restaurant_data.json")
     
     # Group restaurants by neighborhood
     by_hood = defaultdict(list)
@@ -339,9 +339,9 @@ def _save_and_analyze_results(restaurants: List[Dict[str, Any]], driver: webdriv
     
     # Save the full HTML for reference
     try:
-        with open("looksmapping_complete.html", "w", encoding="utf-8") as f:
+        with open("data/looksmapping_complete.html", "w", encoding="utf-8") as f:
             f.write(driver.page_source)
-        logger.info("Complete HTML saved to looksmapping_complete.html")
+        logger.info("Complete HTML saved to data/looksmapping_complete.html")
     except Exception as e:
         logger.warning(f"Error saving HTML: {e}")
 

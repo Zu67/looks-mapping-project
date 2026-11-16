@@ -30,8 +30,8 @@ async def scrape_looksmapping():
         
         # Take a screenshot of the initial page
         print("Taking initial screenshot...")
-        await page.screenshot(path="looksmapping_initial.png")
-        print("Screenshot saved to looksmapping_initial.png")
+        await page.screenshot(path="data/looksmapping_initial.png")
+        print("Screenshot saved to data/looksmapping_initial.png")
         
         # Print the title of the page to confirm we're on the right page
         title = await page.title()
@@ -63,8 +63,8 @@ async def scrape_looksmapping():
             print(f"Error selecting New York: {e}")
         
         # Take another screenshot after selecting New York
-        await page.screenshot(path="looksmapping_ny_selected.png")
-        print("Screenshot saved to looksmapping_ny_selected.png")
+        await page.screenshot(path="data/looksmapping_ny_selected.png")
+        print("Screenshot saved to data/looksmapping_ny_selected.png")
         
         # Try to extract data from the page
         print("Extracting data from page...")
@@ -93,9 +93,9 @@ async def scrape_looksmapping():
         print(f"Page source length: {len(content)}")
         
         # Save the page source for inspection
-        with open("looksmapping_source.html", "w", encoding="utf-8") as f:
+        with open("data/looksmapping_source.html", "w", encoding="utf-8") as f:
             f.write(content)
-        print("Page source saved to looksmapping_source.html")
+        print("Page source saved to data/looksmapping_source.html")
         
         # Look for restaurant data in the JavaScript
         print("Looking for rankings data in JavaScript...")
@@ -108,9 +108,9 @@ async def scrape_looksmapping():
             print("Found rankings data in JavaScript!")
             try:
                 rankings_json = rankings_match.group(1)
-                with open("rankings_data.json", "w") as f:
+                with open("data/rankings_data.json", "w") as f:
                     f.write(rankings_json)
-                print("Rankings data saved to rankings_data.json")
+                print("Rankings data saved to data/rankings_data.json")
                 
                 rankings = json.loads(rankings_json)
                 
@@ -154,10 +154,10 @@ async def scrape_looksmapping():
         
         # Save the data
         if all_restaurants:
-            with open("restaurant_data.json", "w") as f:
+            with open("data/restaurant_data.json", "w") as f:
                 json.dump(all_restaurants, f, indent=2)
             
-            print(f"Saved {len(all_restaurants)} restaurants to restaurant_data.json")
+            print(f"Saved {len(all_restaurants)} restaurants to data/restaurant_data.json")
             
             # Group restaurants by neighborhood
             by_hood = defaultdict(list)
@@ -189,7 +189,7 @@ async def scrape_looksmapping():
                     "age_score": "8.3"
                 }
             ]
-            with open("restaurant_data.json", "w") as f:
+            with open("data/restaurant_data.json", "w") as f:
                 json.dump(test_data, f, indent=2)
             print("Created test dataset with 2 restaurants")
         
