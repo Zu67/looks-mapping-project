@@ -300,7 +300,7 @@ async def _extract_popup_data(page) -> Optional[Dict[str, Any]]:
         score = score_match.group(1) if score_match else "0"
         
         # Extract metric scores from indicators
-        attractive_score, age_score, gender_score = _extract_metric_scores(metric_indicators)
+        attractive_score, age_score, gender_score = await _extract_metric_scores(metric_indicators)
         
         # Extract neighborhood
         hood = await _extract_neighborhood(page, name)
@@ -321,7 +321,7 @@ async def _extract_popup_data(page) -> Optional[Dict[str, Any]]:
         return None
 
 
-def _extract_metric_scores(metric_indicators) -> tuple:
+async def _extract_metric_scores(metric_indicators) -> tuple:
     """
     Extract metric scores from indicator elements.
     
