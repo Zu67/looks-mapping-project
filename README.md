@@ -71,7 +71,7 @@ This project has several scrapers for LooksMapping.com. They look for restaurant
 
 4. **ChromeDriver.** Only `scrapers/selenium_scraper_robust.py` downloads it through webdriver-manager. `scrapers/selenium_scraper.py` calls `webdriver.Chrome()` and expects a driver already available.
 
-`numpy`, `python-dotenv`, `lxml`, `matplotlib`, `seaborn`, `pytest`, `black`, and `flake8` are listed in `requirements.txt` and are not imported by any script. `pandas` is imported by `neighborhood_analyzer.py`.
+`numpy`, `python-dotenv`, `lxml`, `matplotlib`, `seaborn`, `pytest`, `black`, and `flake8` are listed in `requirements.txt` and are not imported by any script. `pandas` is imported by `neighborhood_analyzer.py`. Every requirement uses `>=`. The floors are requests 2.32.0, beautifulsoup4 4.12.0, selenium 4.30.0, playwright 1.40.0, requests-html 0.10.0, pandas 2.0.0, numpy 1.24.0, webdriver-manager 4.0.0, python-dotenv 1.0.0, lxml 4.9.0, matplotlib 3.7.0, seaborn 0.12.0, pytest 7.0.0, black 23.0.0, and flake8 6.0.0.
 
 5. **Install Playwright browsers** (for Playwright scrapers):
    ```bash
