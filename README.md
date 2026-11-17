@@ -8,11 +8,10 @@ This project has several scrapers for LooksMapping.com. They look for restaurant
 
 ## Features
 
-- **Multiple Scraping Methods**: Basic HTTP requests, Selenium WebDriver, and Playwright automation
-- **Comprehensive Data Extraction**: Restaurant names, neighborhoods, attractiveness scores, age demographics, gender ratios
-- **Neighborhood Analysis**: `neighborhood_analyzer.py` averages the three scores by neighborhood for rows in `data/restaurant_data.json`
-- **Robust Error Handling**: Multiple fallback strategies for data extraction
-- **Data Export**: JSON output with structured restaurant data
+- HTTP, requests-html, Playwright, and Selenium scripts aimed at LooksMapping.com
+- Saved rankings for New York, Los Angeles, and San Francisco in `data/rankings_data.json`
+- `neighborhood_analyzer.py` averages the three scores by neighborhood for rows in `data/restaurant_data.json`
+- Several scripts write a built-in sample when they find no rows. That sample is not scraped data.
 
 ## Project Structure
 
@@ -121,25 +120,24 @@ python scrapers/neighborhood_analyzer.py
 
 The script reads `data/restaurant_data.json`, keeps rows whose `hood` is in its Manhattan list, and prints average attractiveness, age, and gender scores by neighborhood. The file in the repository is the two-row fallback, so that report is SoHo and the Upper East Side from the sample.
 
-## Scraping Methods
+## Scripts
 
-### 1. Basic HTTP Scraper (`scrapers/basic_scraper.py`)
-- **Method**: HTTP requests, then a regex for a JavaScript `rankings` object and a second regex for restaurant fields. BeautifulSoup is imported and not used.
-- **Pros**: No browser required
-- **Cons**: Only reads what is in the first HTML response, and only keeps New York from the rankings object
-- **Use Case**: A fetch that does not run the map interface
+Run these from the repository root. A failed network request is not the same as an empty extraction: some scripts write a sample only after the page loads and no rows are found.
 
-### 2. Playwright Scraper (`scrapers/comprehensive_map_scraper.py`)
-- **Method**: Full browser automation with Playwright
-- **Pros**: Handles dynamic content, can interact with complex interfaces
-- **Cons**: Slower, requires browser installation
-- **Use Case**: Comprehensive data extraction with map interaction
-
-### 3. Selenium Scraper (`scrapers/selenium_scraper.py`)
-- **Method**: WebDriver automation with Selenium
-- **Pros**: Mature ecosystem, good debugging tools
-- **Cons**: Calls `webdriver.Chrome()` with no driver manager, so ChromeDriver has to be on the path
-- **Use Case**: A visible Chrome session that selects New York and reads the hot, age, and gender modes
+| Script | What it does |
+| --- | --- |
+| `scrapers/basic_scraper.py` | Requests the homepage. Reads a `const rankings` object and keeps New York, then a field regex. Writes five Test Restaurant rows only when the page loaded and both extractors are empty. A failed request writes nothing. BeautifulSoup is imported and unused. |
+| `scrapers/simple_scraper.py` | Requests the homepage and parses script tags with BeautifulSoup. Keeps New York from `const rankings`, then the same field regex. The sample is Test Restaurant in Downtown and Fancy Cafe in Uptown. Also writes `data/looksmapping.html`. A failed request writes nothing. |
+| `scrapers/scraper.py` | Requests the homepage. The `city` argument is only logged. BeautifulSoup looks for `flyToLocation` onclick JSON, then a script containing `restaurants`. The sample is Test Restaurant 1 in SoHo and Test Restaurant 2 on the Upper East Side. A failed request writes nothing. |
+| `scrapers/extract_data.py` | Does not fetch. Reads `data/LooksMapping.html`. Tries onclick JSON, then New York rows from a rankings object, then raw HTML when fewer than 10 rows were found. If still empty, writes Test Restaurant and Fancy Cafe with numeric scores, `lat`, and `long`. |
+| `scrapers/requests_html_scraper.py` | Renders the homepage and reads `div` elements whose onclick contains `flyToLocation`. Writes `data/restaurant_data.json` and `data/looksmapping_complete.html`, including an empty list. |
+| `scrapers/playwright_scraper.py` | Visible Chromium. Saves `data/looksmapping_initial.png`, `data/looksmapping_ny_selected.png`, and `data/looksmapping_source.html`. When it finds `const rankings`, it writes that object to `data/rankings_data.json` and keeps New York. Otherwise it uses the field regex. The empty case writes the two-row SoHo / Upper East Side sample. |
+| `scrapers/map_scraper.py` | Visible Chromium and the same two screenshots. Clicks up to 30 `.mapboxgl-marker` pins. If those yield nothing, it reads New York from `const rankings` and saves `data/looksmapping_source.html`. The empty case writes the two-row sample. |
+| `scrapers/comprehensive_map_scraper.py` | Visible Chromium, New York, and the hot, age, and gender modes. The empty case writes the two-row sample. |
+| `scrapers/pin_scraper.py` | Visible Chromium, New York, and the hot, age, and gender modes. Clicks map markers and reads popups. Writes `data/restaurant_data_progress.json` during the run, and `data/restaurant_data.json` only when at least one row was found. |
+| `scrapers/selenium_scraper.py` | Chrome through `webdriver.Chrome()`, New York, then hot, age, and gender. Writes `data/restaurant_data.json` even when the list is empty, plus `data/looksmapping_complete.html`. An exception before that save writes nothing. |
+| `scrapers/selenium_scraper_robust.py` | ChromeDriver through webdriver-manager, New York, and hot, age, and gender. Writes `data/restaurant_data.json`, including an empty list, and `data/looksmapping_complete.html` when the loop finishes. |
+| `scrapers/neighborhood_analyzer.py` | Does not scrape. Reads `data/restaurant_data.json`, keeps Manhattan neighborhoods, and prints average attractiveness, age, and gender scores. |
 
 ## Data Structure
 
