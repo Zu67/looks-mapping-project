@@ -144,6 +144,8 @@ Run these from the repository root. A failed network request is not the same as 
 
 `data/rankings_data.json` is a saved rankings extract, not the two-row sample. It is grouped by city (`ny`, `la`, `sf`), then by `hot`, `age`, and `gender`. Each of those has `top` and `bottom` lists. An entry has `name`, `hood`, `category`, `attractive_score`, `age_score`, `gender_score`, `faces`, `lat`, and `long`. `hood` is null on some Los Angeles and San Francisco rows.
 
+`data/LooksMapping.html`, `data/looksmapping_complete.html`, `data/looksmapping_source.html`, and `data/raw_looksmapping.html` are saved copies of the page. `mapboxgl.accessToken` is the word `REDACTED` in each of them. `LooksMapping.html` has that assignment five times. The other three files have it once.
+
 ## Configuration
 
 ### Browser Settings
