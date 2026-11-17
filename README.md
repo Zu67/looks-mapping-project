@@ -133,7 +133,7 @@ Run these from the repository root. A failed network request is not the same as 
 | `scrapers/requests_html_scraper.py` | Renders the homepage and reads `div` elements whose onclick contains `flyToLocation`. Writes `data/restaurant_data.json` and `data/looksmapping_complete.html`, including an empty list. |
 | `scrapers/playwright_scraper.py` | Visible Chromium. Saves `data/looksmapping_initial.png`, `data/looksmapping_ny_selected.png`, and `data/looksmapping_source.html`. When it finds `const rankings`, it writes that object to `data/rankings_data.json` and keeps New York. Otherwise it uses the field regex. The empty case writes the two-row SoHo / Upper East Side sample. |
 | `scrapers/map_scraper.py` | Visible Chromium and the same two screenshots. Clicks up to 30 `.mapboxgl-marker` pins. If those yield nothing, it reads New York from `const rankings` and saves `data/looksmapping_source.html`. The empty case writes the two-row sample. |
-| `scrapers/comprehensive_map_scraper.py` | Visible Chromium, New York, and the hot, age, and gender modes. The empty case writes the two-row sample. |
+| `scrapers/comprehensive_map_scraper.py` | Visible Chromium, New York, then hot, age, and gender. In each mode it clicks every `.mapboxgl-marker`, skips a name it already saved, drags the map to seven fixed points, and wheel-zooms by 2, 1, 0, and -1. A zoom of 0 moves the wheel zero times. An empty result writes the two-row sample. An exception before that save writes nothing. |
 | `scrapers/pin_scraper.py` | Visible Chromium, New York, and the hot, age, and gender modes. Clicks map markers and reads popups. Writes `data/restaurant_data_progress.json` during the run, and `data/restaurant_data.json` only when at least one row was found. |
 | `scrapers/selenium_scraper.py` | Chrome through `webdriver.Chrome()`, New York, then hot, age, and gender. Writes `data/restaurant_data.json` even when the list is empty, plus `data/looksmapping_complete.html`. An exception before that save writes nothing. |
 | `scrapers/selenium_scraper_robust.py` | ChromeDriver through webdriver-manager, New York, and hot, age, and gender. Writes `data/restaurant_data.json`, including an empty list, and `data/looksmapping_complete.html` when the loop finishes. |
@@ -143,7 +143,7 @@ Run these from the repository root. A failed network request is not the same as 
 
 `data/restaurant_data.json` currently holds the fallback sample. Each row has `name`, `hood`, `attractive_score`, `gender_score`, and `age_score`.
 
-`data/rankings_data.json` is grouped by city (`ny`, `la`, `sf`), then by `hot`, `age`, and `gender`. Each of those has `top` and `bottom` lists. An entry has `name`, `hood`, `category`, `attractive_score`, `age_score`, `gender_score`, `faces`, `lat`, and `long`.
+`data/rankings_data.json` is a saved rankings extract, not the two-row sample. It is grouped by city (`ny`, `la`, `sf`), then by `hot`, `age`, and `gender`. Each of those has `top` and `bottom` lists. An entry has `name`, `hood`, `category`, `attractive_score`, `age_score`, `gender_score`, `faces`, `lat`, and `long`. `hood` is null on some Los Angeles and San Francisco rows.
 
 ## Configuration
 
