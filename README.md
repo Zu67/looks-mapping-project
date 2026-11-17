@@ -144,7 +144,7 @@ Run these from the repository root. A failed network request is not the same as 
 
 `data/rankings_data.json` is a saved rankings extract, not the two-row sample. It is grouped by city (`ny`, `la`, `sf`), then by `hot`, `age`, and `gender`. Each of those has `top` and `bottom` lists, and every list has 5 rows, so the file has 90 rows and 88 different names. Hop Won Express is in the New York hot bottom list and the New York gender bottom list. City Lunch Restaurant is in the San Francisco age bottom list and the San Francisco gender bottom list. An entry has `name`, `hood`, `category`, `attractive_score`, `age_score`, `gender_score`, `faces`, `lat`, and `long`. The three scores are strings, `faces` is an integer, and `lat` and `long` are numbers. `hood` is null on 12 Los Angeles rows and on no New York or San Francisco row.
 
-`data/LooksMapping.html`, `data/looksmapping_complete.html`, `data/looksmapping_source.html`, and `data/raw_looksmapping.html` are saved copies of the page. `mapboxgl.accessToken` is the word `REDACTED` in each of them. `LooksMapping.html` has that assignment five times. The other three files have it once.
+`data/LooksMapping.html`, `data/looksmapping_complete.html`, `data/looksmapping_source.html`, and `data/raw_looksmapping.html` are saved copies of the page. Each one contains a `const rankings` assignment, and that object is the same as `data/rankings_data.json`. `LooksMapping.html` has that assignment five times. The other three files have it once. `mapboxgl.accessToken` is the word `REDACTED` in each of them. `LooksMapping.html` has that assignment five times. The other three files have it once. Each file credits walzr.com.
 
 ## Configuration
 
