@@ -227,7 +227,7 @@ This project is for educational and research purposes. Please respect the websit
 
 ## License
 
-This project is open source. Please use responsibly and in accordance with the target website's terms of service.
+This repository does not include a license file.
 
 ## Support
 
