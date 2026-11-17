@@ -1,16 +1,16 @@
 # LooksMapping Scraper
 
-A comprehensive web scraping toolkit for extracting restaurant data from LooksMapping.com, focusing on Manhattan restaurants with attractiveness, age, and gender demographic scores.
+A web scraping toolkit for extracting restaurant data from LooksMapping.com. The saved rankings cover New York, Los Angeles, and San Francisco, with attractiveness, age, and gender scores.
 
 ## Overview
 
-This project provides multiple scraping approaches to extract restaurant data from LooksMapping.com, a website that maps restaurants in New York City with demographic and attractiveness metrics. The scrapers collect data including restaurant names, neighborhoods, attractiveness scores, age demographics, and gender ratios.
+This project has several scrapers for LooksMapping.com. They look for restaurant names, neighborhoods, attractiveness scores, age scores, and gender scores. The saved rankings file includes New York, Los Angeles, and San Francisco.
 
 ## Features
 
 - **Multiple Scraping Methods**: Basic HTTP requests, Selenium WebDriver, and Playwright automation
 - **Comprehensive Data Extraction**: Restaurant names, neighborhoods, attractiveness scores, age demographics, gender ratios
-- **Neighborhood Analysis**: Statistical analysis of Manhattan neighborhoods by various metrics
+- **Neighborhood Analysis**: `neighborhood_analyzer.py` averages the three scores by neighborhood for rows in `data/restaurant_data.json`
 - **Robust Error Handling**: Multiple fallback strategies for data extraction
 - **Data Export**: JSON output with structured restaurant data
 
