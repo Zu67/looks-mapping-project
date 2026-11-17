@@ -121,7 +121,7 @@ The script reads `data/restaurant_data.json` and keeps rows whose `hood` is in i
 
 ## Scripts
 
-Run these from the repository root. A failed network request is not the same as an empty extraction: some scripts write a sample only after the page loads and no rows are found.
+Run these from the repository root. A failed network request is not the same as an empty extraction: some scripts write a sample only after the page loads and no rows are found. `import time` is unused in `map_scraper.py`, `pin_scraper.py`, `playwright_scraper.py`, and `requests_html_scraper.py`. `selenium_scraper.py` imports `Set` and does not use it. `selenium_scraper_robust.py` imports `os` and does not use it.
 
 | Script | What it does |
 | --- | --- |
