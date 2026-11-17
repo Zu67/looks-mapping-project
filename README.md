@@ -69,10 +69,9 @@ This project has several scrapers for LooksMapping.com. They look for restaurant
    pip install -r requirements.txt
    ```
 
-4. **Install browser drivers** (for Selenium):
-   ```bash
-   # Chrome driver will be automatically managed
-   ```
+4. **ChromeDriver.** Only `scrapers/selenium_scraper_robust.py` downloads it through webdriver-manager. `scrapers/selenium_scraper.py` calls `webdriver.Chrome()` and expects a driver already available.
+
+`numpy`, `python-dotenv`, `lxml`, `matplotlib`, `seaborn`, `pytest`, `black`, and `flake8` are listed in `requirements.txt` and are not imported by any script. `pandas` is imported by `neighborhood_analyzer.py`.
 
 5. **Install Playwright browsers** (for Playwright scrapers):
    ```bash
@@ -87,9 +86,9 @@ This project has several scrapers for LooksMapping.com. They look for restaurant
 python scrapers/basic_scraper.py
 ```
 
-`scrapers/basic_scraper.py` requests `https://looksmapping.com`. It looks for a `const rankings = {...}` object and keeps the New York entries, then tries a regex on `name`, `hood`, and the three scores. BeautifulSoup is imported and not used. If the page loads and both extractors return nothing, it writes five fallback rows, Test Restaurant 1 through Test Restaurant 5, to `data/restaurant_data.json`. If the request fails, it prints the error and does not write a file.
+`scrapers/basic_scraper.py` requests `https://looksmapping.com` with a Macintosh Chrome 91 user agent. A successful response is saved to `data/raw_looksmapping.html` before extraction. It keeps New York from `const rankings`, then uses the field regex. If both are empty it writes five rows: SoHo, the Upper East Side, the West Village, Tribeca, and Chelsea. A failed request writes nothing. BeautifulSoup is imported and not used.
 
-The `data/restaurant_data.json` in this repository is the two-row fallback, Test Restaurant 1 in SoHo and Test Restaurant 2 on the Upper East Side. That pair is what `scrapers/comprehensive_map_scraper.py`, `scrapers/map_scraper.py`, `scrapers/playwright_scraper.py`, and `scrapers/scraper.py` write when they find nothing. `scrapers/simple_scraper.py` uses a different pair, Test Restaurant and Fancy Cafe.
+The `data/restaurant_data.json` in this repository is the two-row fallback, Test Restaurant 1 in SoHo and Test Restaurant 2 on the Upper East Side. That pair is what `scrapers/comprehensive_map_scraper.py`, `scrapers/map_scraper.py`, `scrapers/playwright_scraper.py`, and `scrapers/scraper.py` write when they find nothing. `scrapers/simple_scraper.py` writes Test Restaurant in Downtown and Fancy Cafe in Uptown, with string scores. `scrapers/extract_data.py` writes those same two names with numeric scores, `lat`, and `long`.
 
 `data/rankings_data.json` is a saved rankings object for New York, Los Angeles, and San Francisco. Each city has hot, age, and gender lists, with top and bottom entries.
 
