@@ -118,7 +118,7 @@ After scraping, analyze the collected data:
 python scrapers/neighborhood_analyzer.py
 ```
 
-The script reads `data/restaurant_data.json`, keeps rows whose `hood` is in its Manhattan list, and prints average attractiveness, age, and gender scores by neighborhood. The file in the repository is the two-row fallback, so that report is SoHo and the Upper East Side from the sample.
+The script reads `data/restaurant_data.json` and keeps rows whose `hood` is in its Manhattan list. It prints three tables: attractiveness with the highest average first, age with the highest average first under the heading "ranked by youth", and gender with the lowest average first under "ranked by female ratio". The code comment says a lower gender score means more female. The file in the repository is the two-row fallback, so that report is SoHo and the Upper East Side from the sample.
 
 ## Scripts
 
@@ -137,7 +137,7 @@ Run these from the repository root. A failed network request is not the same as 
 | `scrapers/pin_scraper.py` | Visible Chromium, New York, and the hot, age, and gender modes. Clicks map markers and reads popups. Writes `data/restaurant_data_progress.json` during the run, and `data/restaurant_data.json` only when at least one row was found. |
 | `scrapers/selenium_scraper.py` | Chrome through `webdriver.Chrome()`, New York, then hot, age, and gender. Writes `data/restaurant_data.json` even when the list is empty, plus `data/looksmapping_complete.html`. An exception before that save writes nothing. |
 | `scrapers/selenium_scraper_robust.py` | ChromeDriver through webdriver-manager, New York, and hot, age, and gender. Writes `data/restaurant_data.json`, including an empty list, and `data/looksmapping_complete.html` when the loop finishes. |
-| `scrapers/neighborhood_analyzer.py` | Does not scrape. Reads `data/restaurant_data.json`, keeps Manhattan neighborhoods, and prints average attractiveness, age, and gender scores. |
+| `scrapers/neighborhood_analyzer.py` | Does not scrape. Reads `data/restaurant_data.json`, keeps its Manhattan list, and prints attractiveness and age highest-first. The gender table is lowest-first, and the comment says a lower score means more female. |
 
 ## Data Structure
 
@@ -202,7 +202,7 @@ browser = await p.chromium.launch(headless=False)
 
 ## Data Analysis
 
-`scrapers/neighborhood_analyzer.py` groups the rows in `data/restaurant_data.json` by neighborhood and prints three tables: average `attractive_score`, average `age_score`, and average `gender_score`. It only keeps neighborhoods in its Manhattan list.
+`scrapers/neighborhood_analyzer.py` groups the rows in `data/restaurant_data.json` by neighborhood and prints three tables. Attractiveness and age are sorted with the highest average first. Gender is sorted with the lowest average first. It only keeps neighborhoods in its Manhattan list.
 
 ## Contributing
 
