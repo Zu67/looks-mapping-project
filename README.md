@@ -84,42 +84,32 @@ This project has several scrapers for LooksMapping.com. They look for restaurant
 
 ### Basic Scraping
 
-The simplest way to start scraping:
-
 ```bash
 python scrapers/basic_scraper.py
 ```
 
-This will:
-- Fetch the LooksMapping website
-- Extract restaurant data from JavaScript objects
-- Save results to `data/restaurant_data.json`
+`scrapers/basic_scraper.py` requests `https://looksmapping.com`. It looks for a `const rankings = {...}` object and keeps the New York entries, then tries a regex on `name`, `hood`, and the three scores. BeautifulSoup is imported and not used. If the page loads and both extractors return nothing, it writes five fallback rows, Test Restaurant 1 through Test Restaurant 5, to `data/restaurant_data.json`. If the request fails, it prints the error and does not write a file.
 
-If extraction finds nothing, the script writes its built-in fallback rows. The `data/restaurant_data.json` in this repository is that fallback: Test Restaurant 1 and Test Restaurant 2.
+The `data/restaurant_data.json` in this repository is the two-row fallback, Test Restaurant 1 in SoHo and Test Restaurant 2 on the Upper East Side. That pair is what `scrapers/comprehensive_map_scraper.py`, `scrapers/map_scraper.py`, `scrapers/playwright_scraper.py`, and `scrapers/scraper.py` write when they find nothing. `scrapers/simple_scraper.py` uses a different pair, Test Restaurant and Fancy Cafe.
 
 `data/rankings_data.json` is a saved rankings object for New York, Los Angeles, and San Francisco. Each city has hot, age, and gender lists, with top and bottom entries.
 
-### Advanced Scraping with Playwright
-
-For comprehensive data extraction with browser automation:
+### Playwright
 
 ```bash
 python scrapers/comprehensive_map_scraper.py
 ```
 
-This will:
-- Launch a browser and navigate to the website
-- Interact with the map interface
-- Extract data from multiple viewing modes (hot, age, gender)
-- Collect comprehensive restaurant data
+`scrapers/comprehensive_map_scraper.py` launches Chromium with `headless=False`, selects New York, and walks the hot, age, and gender modes. If that finds no restaurants, it writes the two-row fallback above.
 
-### Selenium-based Scraping
-
-For traditional browser automation:
+### Selenium
 
 ```bash
 python scrapers/selenium_scraper.py
+python scrapers/selenium_scraper_robust.py
 ```
+
+`scrapers/selenium_scraper.py` calls `webdriver.Chrome()` and does not download a driver. `scrapers/selenium_scraper_robust.py` installs ChromeDriver through webdriver-manager.
 
 ### Data Analysis
 
@@ -134,10 +124,10 @@ The script reads `data/restaurant_data.json`, keeps rows whose `hood` is in its 
 ## Scraping Methods
 
 ### 1. Basic HTTP Scraper (`scrapers/basic_scraper.py`)
-- **Method**: HTTP requests with BeautifulSoup parsing
-- **Pros**: Fast, lightweight, no browser required
-- **Cons**: Limited to static content, may miss dynamic data
-- **Use Case**: Quick data extraction when JavaScript execution isn't needed
+- **Method**: HTTP requests, then a regex for a JavaScript `rankings` object and a second regex for restaurant fields. BeautifulSoup is imported and not used.
+- **Pros**: No browser required
+- **Cons**: Only reads what is in the first HTML response, and only keeps New York from the rankings object
+- **Use Case**: A fetch that does not run the map interface
 
 ### 2. Playwright Scraper (`scrapers/comprehensive_map_scraper.py`)
 - **Method**: Full browser automation with Playwright
@@ -148,8 +138,8 @@ The script reads `data/restaurant_data.json`, keeps rows whose `hood` is in its 
 ### 3. Selenium Scraper (`scrapers/selenium_scraper.py`)
 - **Method**: WebDriver automation with Selenium
 - **Pros**: Mature ecosystem, good debugging tools
-- **Cons**: Requires driver management, slower than Playwright
-- **Use Case**: When you need Selenium-specific features
+- **Cons**: Calls `webdriver.Chrome()` with no driver manager, so ChromeDriver has to be on the path
+- **Use Case**: A visible Chrome session that selects New York and reads the hot, age, and gender modes
 
 ## Data Structure
 
@@ -164,11 +154,13 @@ The script reads `data/restaurant_data.json`, keeps rows whose `hood` is in its 
 For headless operation, modify the browser launch options:
 
 ```python
-# In scrapers/comprehensive_map_scraper.py
-browser = await p.chromium.launch(headless=True)  # Set to True for headless
+# scrapers/comprehensive_map_scraper.py, inside _setup_browser
+browser = await playwright.chromium.launch(
+    headless=False,  # Set to True for headless operation
+)
 
-# In scrapers/selenium_scraper.py
-chrome_options.add_argument("--headless")  # Uncomment for headless
+# scrapers/selenium_scraper.py, inside _setup_webdriver
+# chrome_options.add_argument("--headless")
 ```
 
 ### Timeout Settings
@@ -186,7 +178,8 @@ time.sleep(3)  # 3 seconds
 ### Common Issues
 
 1. **"ChromeDriver not found"**
-   - Solution: The project uses webdriver-manager to auto-download drivers
+   - `scrapers/selenium_scraper.py` calls `webdriver.Chrome()` and expects a driver already on the path
+   - `scrapers/selenium_scraper_robust.py` downloads one with webdriver-manager
 
 2. **"Playwright browsers not installed"**
    - Solution: Run `playwright install`
