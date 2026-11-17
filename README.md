@@ -118,7 +118,7 @@ After scraping, analyze the collected data:
 python scrapers/neighborhood_analyzer.py
 ```
 
-The script reads `data/restaurant_data.json` and keeps rows whose `hood` is in its Manhattan list. It prints three tables: attractiveness with the highest average first, age with the highest average first under the heading "ranked by youth", and gender with the lowest average first under "ranked by female ratio". The code comment says a lower gender score means more female. The file in the repository is the two-row fallback, so that report is SoHo and the Upper East Side from the sample.
+The script reads `data/restaurant_data.json` and keeps rows whose `hood` is in its Manhattan list. It prints three tables: attractiveness with the highest average first, age with the highest average first under the heading "ranked by youth", and gender with the lowest average first under "ranked by female ratio". The code comment says a lower gender score means more female. The file in the repository is the two-row fallback, so that report is SoHo and the Upper East Side from the sample. Hamilton Heights is in the New York section of `data/rankings_data.json` and is not in that Manhattan list, so a row with that hood would be dropped.
 
 ## Scripts
 
@@ -202,7 +202,7 @@ browser = await p.chromium.launch(headless=False)
 
 ## Data Analysis
 
-`scrapers/neighborhood_analyzer.py` groups the rows in `data/restaurant_data.json` by neighborhood and prints three tables. Attractiveness and age are sorted with the highest average first. Gender is sorted with the lowest average first. It only keeps neighborhoods in its Manhattan list.
+`scrapers/neighborhood_analyzer.py` groups the rows in `data/restaurant_data.json` by neighborhood and prints three tables. Attractiveness and age are sorted with the highest average first. Gender is sorted with the lowest average first. It only keeps neighborhoods in its Manhattan list. Hamilton Heights is not on that list.
 
 ## Contributing
 
