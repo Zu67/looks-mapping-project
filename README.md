@@ -129,7 +129,7 @@ After scraping, analyze the collected data:
 python scrapers/neighborhood_analyzer.py
 ```
 
-This will provide statistical analysis of Manhattan neighborhoods.
+The script reads `data/restaurant_data.json`, keeps rows whose `hood` is in its Manhattan list, and prints average attractiveness, age, and gender scores by neighborhood. The file in the repository is the two-row fallback, so that report is SoHo and the Upper East Side from the sample.
 
 ## Scraping Methods
 
@@ -211,11 +211,7 @@ browser = await p.chromium.launch(headless=False)
 
 ## Data Analysis
 
-The `scrapers/neighborhood_analyzer.py` script provides statistical analysis:
-
-- **Attractiveness Rankings**: Neighborhoods ranked by average attractiveness
-- **Age Demographics**: Areas with younger vs. older demographics  
-- **Gender Ratios**: Neighborhoods with different gender distributions
+`scrapers/neighborhood_analyzer.py` groups the rows in `data/restaurant_data.json` by neighborhood and prints three tables: average `attractive_score`, average `age_score`, and average `gender_score`. It only keeps neighborhoods in its Manhattan list.
 
 ## Contributing
 
