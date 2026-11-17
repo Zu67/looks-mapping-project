@@ -95,6 +95,10 @@ This will:
 - Extract restaurant data from JavaScript objects
 - Save results to `data/restaurant_data.json`
 
+If extraction finds nothing, the script writes its built-in fallback rows. The `data/restaurant_data.json` in this repository is that fallback: Test Restaurant 1 and Test Restaurant 2.
+
+`data/rankings_data.json` is a saved rankings object for New York, Los Angeles, and San Francisco. Each city has hot, age, and gender lists, with top and bottom entries.
+
 ### Advanced Scraping with Playwright
 
 For comprehensive data extraction with browser automation:
@@ -149,36 +153,9 @@ This will provide statistical analysis of Manhattan neighborhoods.
 
 ## Data Structure
 
-The scraped data is saved in `data/restaurant_data.json` with the following structure:
+`data/restaurant_data.json` currently holds the fallback sample. Each row has `name`, `hood`, `attractive_score`, `gender_score`, and `age_score`.
 
-```json
-[
-  {
-    "name": "Restaurant Name",
-    "hood": "Neighborhood",
-    "attractive_score": "8.5",
-    "age_score": "7.2",
-    "gender_score": "6.8",
-    "cuisine": "Italian",
-    "score": "8.5",
-    "reviewers": "150 reviewers",
-    "lat": 40.7589,
-    "long": -73.9851
-  }
-]
-```
-
-### Field Descriptions
-
-- **name**: Restaurant name
-- **hood**: Manhattan neighborhood
-- **attractive_score**: Attractiveness rating (0-10)
-- **age_score**: Age demographic score (0-10)
-- **gender_score**: Gender ratio score (0-10, lower = more female)
-- **cuisine**: Restaurant cuisine type
-- **score**: Overall rating
-- **reviewers**: Number of reviewers
-- **lat/long**: Geographic coordinates
+`data/rankings_data.json` is grouped by city (`ny`, `la`, `sf`), then by `hot`, `age`, and `gender`. Each of those has `top` and `bottom` lists. An entry has `name`, `hood`, `category`, `attractive_score`, `age_score`, `gender_score`, `faces`, `lat`, and `long`.
 
 ## Configuration
 
